@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: "vip"
+      MYSQL_ROOT_PASSWORD: "vip"
+    ports:
+      - 3306:3306
+    restart: always
+    volumes:
+      - mysql:/var/lib/mysql
+
+volumes:
+  mysql:
