@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 
-export class UserDTO{
+export class UserDto{
   id: string 
   fullname: string
   studentCode: string
@@ -9,7 +9,14 @@ export class UserDTO{
   password: string
 }
 
-export class CreateUserDTO {
+export class FindOnePayload{
+  id: string
+  role: string
+  fullname: string
+  password: string
+}
+
+export class CreateUserDto {
   @IsNotEmpty()
   @MaxLength(30)
   fullname: string
@@ -23,4 +30,7 @@ export class CreateUserDTO {
   @IsNotEmpty()
   @IsEmail()
   email: string
+
+  @IsNotEmpty()
+  password: string
 }

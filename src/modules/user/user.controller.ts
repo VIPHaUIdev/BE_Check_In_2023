@@ -1,13 +1,14 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Version } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserDTO, CreateUserDTO } from './dto/user.dto';
-import { Response } from 'src/common/dto/response';
 import { ResponseMessage } from 'src/decorators/response.decorator';
+import { CreateUserDto, FindOnePayload, UserDto } from './dto/user.dto';
+import { Admin } from 'src/decorators/auth.decorator';
 
 @Controller({
   path: "users",
   version: "1"
 })
+@Admin()
 export class UserController {
   constructor(
     private userService: UserService,
@@ -16,15 +17,17 @@ export class UserController {
   @Get(':id')
   @ResponseMessage('success')
   @HttpCode(HttpStatus.OK)
-  async getById(@Param('id') id: string): Promise<UserDTO>{
-    return this.userService.findOne(id)
+  async getOne(@Param('id') id: string): Promise<FindOnePayload>{
+    const user = await this.userService.findOne(id)
+    delete user.password;
+    return user
   }
 
   @Post()
   @ResponseMessage('create success')
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createPostDto: CreateUserDTO): Promise<UserDTO>{
-    const user = await this.userService.create(createPostDto);
+  async create(@Body() createUser: CreateUserDto): Promise<UserDto>{
+    const user = await this.userService.create(createUser);
     delete user.password;
     return user
   }
