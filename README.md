@@ -15,7 +15,9 @@ cp .env.example .env
 
 * Chú thích 
 ```
-DATABASE_URL="postgresql://hit:18082010@127.0.0.1:5432/hit?schema=public" // url kết nối postgresql
+DATABASE_URL="mysql://root:vip@localhost:3306/vip" // url kết nối postgresql
+JWT_SECRET=hoangdz // mã bí mật secret
+JWT_ACCESS_EXPIRATION_MINUTES=30 // thời gian hết hạn token
 ```
 
 2. Tải các dependencies.
@@ -28,9 +30,11 @@ npm install
 - [Liên hệ](#liên-hệ)
 
 ## Đặc trưng
+- **Framework**: [NestJS](https://nestjs.com/) 
+- **Database**: [MySQL](https://www.mysql.com/)
 - **ORM**: [Prisma](https://www.prisma.io)
-- **Validation**: [Joi](https://joi.dev)
-- Update...
+- **Validation**: [class-validator](https://github.com/nestjs/class-validator)
+- **Docker support**
 
 ## Dòng lệnh
 1. Chạy môi trường dev
