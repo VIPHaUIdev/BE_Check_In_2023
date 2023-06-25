@@ -3,10 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './guards/roles.guard';
-import { AuthGuard } from './guards/auth.guard';
-import { JwtModule } from '@nestjs/jwt';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -17,6 +14,7 @@ import { JwtModule } from '@nestjs/jwt';
     PrismaModule,
     AuthModule,
     UserModule,
+    SharedModule
   ],
   providers: []
 })
