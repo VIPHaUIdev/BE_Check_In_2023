@@ -4,12 +4,17 @@ import { PrismaModule } from './modules/prisma/prisma.module'
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SharedModule } from './shared/shared.module';
+import { WinstonModule } from 'nest-winston';
+import { loggerIns } from './common/logger';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+    }),
+    WinstonModule.forRoot({
+      instance: loggerIns
     }),
     PrismaModule,
     AuthModule,
