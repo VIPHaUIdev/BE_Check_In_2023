@@ -1,4 +1,5 @@
 import * as winston from 'winston';
+import 'winston-daily-rotate-file';
 
 const enumerateErrorFormat = winston.format((info) => {
   if (info.level == 'error') {
@@ -8,6 +9,14 @@ const enumerateErrorFormat = winston.format((info) => {
   return info;
 });
 
+const fileTransport = new winston.transports.DailyRotateFile({
+  level: 'info',
+  filename: './logs/log_%DATE%.log',
+  datePattern: 'DD_MM_YYYY',
+  zippedArchive: true,
+  maxSize: '100m',
+  maxFiles: '14d'
+});
 
 export const formatLog = winston.format.printf(({ level, message, label, timestamp }) => {
   return `[ ${timestamp} ] [ ${label} ] [ ${level} ] : ${message}`;
@@ -30,6 +39,7 @@ export const loggerIns = winston.createLogger({
         formatLog
       )
     }),
-    new winston.transports.File({ filename: './logs/vip.log' }),
+    // new winston.transports.File({ filename: './logs/vip.log' }),
+    fileTransport
   ]
 });
