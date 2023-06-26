@@ -1,4 +1,5 @@
 import * as winston from 'winston';
+import 'winston-daily-rotate-file';
 
 const enumerateErrorFormat = winston.format((info) => {
   if (info.level == 'error') {
