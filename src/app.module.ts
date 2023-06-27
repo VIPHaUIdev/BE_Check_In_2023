@@ -7,6 +7,9 @@ import { SharedModule } from './shared/shared.module';
 import { WinstonModule } from 'nest-winston';
 import { loggerIns } from './common/logger';
 import { HttpLoggerMiddleware } from './middlewares/http.logger.middleware';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { CustomThrottlerGuard } from './providers/custom-throttler-guard.provider';
 
 @Module({
   imports: [
@@ -16,6 +19,10 @@ import { HttpLoggerMiddleware } from './middlewares/http.logger.middleware';
     }),
     WinstonModule.forRoot({
       instance: loggerIns,
+    }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 1,
     }),
     PrismaModule,
     AuthModule,
