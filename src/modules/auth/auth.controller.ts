@@ -2,11 +2,13 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ResponseMessage } from 'src/decorators/response.decorator';
 import { LoginDto, LoginPayloadDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @Controller({
   path: "auth",
   version: "1"
 })
+@SkipThrottle(false)
 export class AuthController {
   constructor(
     private authService: AuthService,
