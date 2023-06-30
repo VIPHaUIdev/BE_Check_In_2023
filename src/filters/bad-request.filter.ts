@@ -17,12 +17,12 @@ export class HttpExceptionFilter
     const r = exception.getResponse() as { message: ValidationError[] };
     const resValidate = {
       statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      error: "Validate error",
-      message: {}
+      error: 'Validate error',
+      message: {},
     };
 
-    for(const m of r.message) {
-      resValidate.message[m.property] = Object.values(m.constraints)
+    for (const m of r.message) {
+      resValidate.message[m.property] = Object.values(m.constraints);
     }
     response.status(statusCode).json(resValidate);
   }
