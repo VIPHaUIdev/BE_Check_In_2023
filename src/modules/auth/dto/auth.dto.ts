@@ -1,13 +1,13 @@
-import { FindOnePayload, UserDto } from "src/modules/user/dto/user.dto";
+import { FindOnePayload, UserDto } from 'src/modules/user/dto/user.dto';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class LoginDto{
+export class LoginDto {
   @IsNotEmpty()
-  account: string
+  account: string;
 
   @IsNotEmpty()
   @IsString()
-  password: string
+  password: string;
 }
 
 export class TokenPayloadDto {

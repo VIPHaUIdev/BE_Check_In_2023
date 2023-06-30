@@ -12,17 +12,17 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class ErrorsInterceptor implements NestInterceptor {
-  constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger) {}
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    return next
-      .handle()
-      .pipe(
-        tap({
-          error: (err) => {
-            this.logger.error(err.stack, { label: "errors_interceptor" })
-          }
-        })
-      );
+    return next.handle().pipe(
+      tap({
+        error: (err) => {
+          this.logger.error(err.stack, { label: 'errors_interceptor' });
+        },
+      }),
+    );
   }
 }

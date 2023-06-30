@@ -15,9 +15,7 @@ export class AuthService {
     private userService: UserService,
   ) {}
 
-  async createAccessToken(data: {
-    userId: string;
-  }): Promise<TokenPayloadDto> {
+  async createAccessToken(data: { userId: string }): Promise<TokenPayloadDto> {
     return new TokenPayloadDto({
       accessToken: await this.jwtService.signAsync({
         userId: data.userId,
@@ -26,9 +24,9 @@ export class AuthService {
     });
   }
 
-  async login(@Body() loginBody: LoginDto): Promise<FindOnePayload>{
-    const user = await this.userService.findOne(loginBody.account)
-    if(!user){
+  async login(@Body() loginBody: LoginDto): Promise<FindOnePayload> {
+    const user = await this.userService.findOne(loginBody.account);
+    if (!user) {
       throw new UserNotFoundException();
     }
 
@@ -41,6 +39,6 @@ export class AuthService {
       throw new UserNotFoundException();
     }
 
-    return user
+    return user;
   }
 }

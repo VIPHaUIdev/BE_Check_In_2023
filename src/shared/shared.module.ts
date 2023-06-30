@@ -1,9 +1,7 @@
-import { Global, Module, Provider } from "@nestjs/common";
-import { SseService } from "./services/sse.service";
+import { Global, Module, Provider } from '@nestjs/common';
+import { SseService } from './services/sse.service';
 
-const providers: Provider[] = [
-  SseService
-];
+const providers: Provider[] = [SseService];
 
 @Global()
 @Module({

@@ -1,16 +1,23 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpStatus,
+} from '@nestjs/common';
 import { BaseExceptionFilter, Reflector } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import type { Response } from 'express';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
-export class PrismaClientExceptionFilter implements ExceptionFilter<Prisma.PrismaClientKnownRequestError> {
+export class PrismaClientExceptionFilter
+  implements ExceptionFilter<Prisma.PrismaClientKnownRequestError>
+{
   constructor(public reflector: Reflector) {}
 
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const message = exception.message.split('\n')
+    const message = exception.message.split('\n');
 
     switch (exception.code) {
       case 'P2002': {
@@ -18,8 +25,8 @@ export class PrismaClientExceptionFilter implements ExceptionFilter<Prisma.Prism
         response.status(status).json({
           statusCode: status,
           message: message[message.length - 1],
-          error: "The record already exists"
-        })
+          error: 'The record already exists',
+        });
         break;
       }
       default:
@@ -27,8 +34,8 @@ export class PrismaClientExceptionFilter implements ExceptionFilter<Prisma.Prism
         const status = HttpStatus.INTERNAL_SERVER_ERROR;
         response.status(status).json({
           statusCode: status,
-          error: "Server error"
-        })
+          error: 'Server error',
+        });
         break;
     }
   }

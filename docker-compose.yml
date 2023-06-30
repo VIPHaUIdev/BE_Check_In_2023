@@ -7,7 +7,7 @@ services:
       MYSQL_DATABASE: "vip"
       MYSQL_ROOT_PASSWORD: "vip"
     ports:
-      - 3306:3306
+      - 3305:3306
     restart: always
     volumes:
       - mysql:/var/lib/mysql
