@@ -22,6 +22,7 @@
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/throttler": "^4.1.0",
+    "@nestlab/google-recaptcha": "^3.4.1",
     "@prisma/client": "^4.16.1",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",

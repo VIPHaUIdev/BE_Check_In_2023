@@ -1,14 +1,15 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { WinstonModule } from 'nest-winston';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { GoogleRecaptchaModule } from '@nestlab/google-recaptcha'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SharedModule } from './shared/shared.module';
-import { WinstonModule } from 'nest-winston';
 import { loggerIns } from './common/logger';
 import { HttpLoggerMiddleware } from './middlewares/http.logger.middleware';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './providers/custom-throttler-guard.provider';
 
 @Module({
@@ -22,7 +23,11 @@ import { CustomThrottlerGuard } from './providers/custom-throttler-guard.provide
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
-      limit: 1,
+      limit: 20,
+    }),
+    GoogleRecaptchaModule.forRoot({
+      secretKey: process.env.GOOGLE_RECAPTCHA_SECRET_KEY,
+      response: req => req.headers.recaptcha,
     }),
     PrismaModule,
     AuthModule,
@@ -33,7 +38,8 @@ import { CustomThrottlerGuard } from './providers/custom-throttler-guard.provide
     {
       provide: APP_GUARD,
       useClass: CustomThrottlerGuard
-    }
+    },
+    Logger
   ]
 })
 export class AppModule implements NestModule{
