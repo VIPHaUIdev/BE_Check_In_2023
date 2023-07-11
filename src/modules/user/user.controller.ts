@@ -16,11 +16,12 @@ import { Admin } from 'src/decorators/auth.decorator';
   path: 'users',
   version: '1',
 })
-@Admin()
+// @Admin()
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get(':id')
+  @Admin()
   @ResponseMessage('success')
   @HttpCode(HttpStatus.OK)
   async getOne(@Param('id') id: string): Promise<FindOnePayload> {

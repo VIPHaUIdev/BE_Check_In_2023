@@ -2,9 +2,9 @@ import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 
 export class UserDto {
   id: string;
-  fullname: string;
-  studentCode: string;
-  phone: string;
+  fullName: string;
+  generation: string;
+  phoneNumber: string;
   isCheckin: boolean;
   password: string;
 }
@@ -12,20 +12,20 @@ export class UserDto {
 export class FindOnePayload {
   id: string;
   role: string;
-  fullname: string;
+  fullName: string;
   password: string;
 }
 
 export class CreateUserDto {
   @IsNotEmpty()
   @MaxLength(30)
-  fullname: string;
+  fullName: string;
 
   @IsNotEmpty()
-  studentCode: string;
+  generation: string;
 
   @IsNotEmpty()
-  phone: string;
+  phoneNumber: string;
 
   @IsNotEmpty()
   @IsEmail()
