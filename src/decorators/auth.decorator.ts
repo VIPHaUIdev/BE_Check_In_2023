@@ -5,14 +5,12 @@ import { RolesGuard } from 'src/guards/roles.guard';
 import { Roles } from './roles.decorator';
 
 export function Auth() {
-  return applyDecorators(
-    UseGuards(AuthGuard, RolesGuard)
-  );
+  return applyDecorators(UseGuards(AuthGuard, RolesGuard));
 }
 
 export function Admin() {
   return applyDecorators(
     Roles(RoleType.ADMIN),
-    UseGuards(AuthGuard, RolesGuard)
+    UseGuards(AuthGuard, RolesGuard),
   );
 }

@@ -5,19 +5,17 @@ import { AuthService } from './auth.service';
 import { SkipThrottle } from '@nestjs/throttler';
 
 @Controller({
-  path: "auth",
-  version: "1"
+  path: 'auth',
+  version: '1',
 })
 @SkipThrottle(false)
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('login')
   @ResponseMessage('login success')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginBody: LoginDto): Promise<LoginPayloadDto>{
+  async login(@Body() loginBody: LoginDto): Promise<LoginPayloadDto> {
     const user = await this.authService.login(loginBody);
 
     const token = await this.authService.createAccessToken({
