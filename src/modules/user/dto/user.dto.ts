@@ -5,8 +5,24 @@ export class UserDto {
   fullName: string;
   generation: string;
   phoneNumber: string;
-  isCheckin: boolean;
-  password: string;
+  isCheckin?: boolean;
+  password?: string;
+}
+
+export class signupUserDto {
+  @IsNotEmpty()
+  @MaxLength(30)
+  fullName: string;
+
+  @IsNotEmpty()
+  generation: string;
+
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 }
 
 export class FindOnePayload {

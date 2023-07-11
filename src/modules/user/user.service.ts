@@ -34,4 +34,10 @@ export class UserService {
       data: { ...userBody, password: generateHash(userBody.password) },
     });
   }
+
+  signup(userBody: Prisma.UserCreateInput): Promise<UserDto> {
+    return this.prismaService.user.create({
+      data: { ...userBody },
+    });
+  }
 }
