@@ -9,7 +9,7 @@ export class UserDto {
   password?: string;
 }
 
-export class signupUserDto {
+export class ValidateUserDto {
   @IsNotEmpty()
   @MaxLength(30)
   fullName: string;
@@ -32,21 +32,7 @@ export class FindOnePayload {
   password: string;
 }
 
-export class CreateUserDto {
-  @IsNotEmpty()
-  @MaxLength(30)
-  fullName: string;
-
-  @IsNotEmpty()
-  generation: string;
-
-  @IsNotEmpty()
-  phoneNumber: string;
-
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-
+export class CreateUserDto extends ValidateUserDto {
   @IsNotEmpty()
   password: string;
 }
