@@ -2,35 +2,37 @@ import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
 
 export class UserDto {
   id: string;
-  fullname: string;
-  studentCode: string;
-  phone: string;
-  isCheckin: boolean;
-  password: string;
+  fullName: string;
+  generation: string;
+  phoneNumber: string;
+  isCheckin?: boolean;
+  password?: string;
+}
+
+export class ValidateUserDto {
+  @IsNotEmpty()
+  @MaxLength(30)
+  fullName: string;
+
+  @IsNotEmpty()
+  generation: string;
+
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 }
 
 export class FindOnePayload {
   id: string;
   role: string;
-  fullname: string;
+  fullName: string;
   password: string;
 }
 
-export class CreateUserDto {
-  @IsNotEmpty()
-  @MaxLength(30)
-  fullname: string;
-
-  @IsNotEmpty()
-  studentCode: string;
-
-  @IsNotEmpty()
-  phone: string;
-
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-
+export class CreateUserDto extends ValidateUserDto {
   @IsNotEmpty()
   password: string;
 }

@@ -2,41 +2,42 @@ import { Injectable, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FindOnePayload, UserDto } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
-import { type Prisma } from '@prisma/client'
+import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prismaService: PrismaService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  async findOne(account: string): Promise<FindOnePayload | null>{
+  async findOne(account: string): Promise<FindOnePayload | null> {
     const user = await this.prismaService.user.findFirst({
       where: {
-        OR: [
-          { phone: account },
-          { email: account }
-        ]
+        OR: [{ phoneNumber: account }, { email: account }],
       },
       select: {
         id: true,
-        fullname: true,
+        fullName: true,
         password: true,
-        role: true
-      }
-    })
+        role: true,
+      },
+    });
 
-    if(!user){
+    if (!user) {
       throw new UserNotFoundException();
     }
 
-    return user
+    return user;
   }
 
-  create(userBody: Prisma.UserCreateInput): Promise<UserDto>{
+  create(userBody: Prisma.UserCreateInput): Promise<UserDto> {
     return this.prismaService.user.create({
-      data: {...userBody, password: generateHash(userBody.password)}
-    })
+      data: { ...userBody, password: generateHash(userBody.password) },
+    });
+  }
+
+  signup(userBody: Prisma.UserCreateInput): Promise<UserDto> {
+    return this.prismaService.user.create({
+      data: { ...userBody },
+    });
   }
 }
