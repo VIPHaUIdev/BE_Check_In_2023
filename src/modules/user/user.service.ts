@@ -29,6 +29,52 @@ export class UserService {
     return user;
   }
 
+  async findAll(query: any) {
+    let fieldSort = 'createdAt';
+    let typeSort = 'asc';
+    if (query.sort) {
+      fieldSort = query.sort.split(':')[0] || 'createdAt';
+      typeSort = query.sort.split(':')[1] || 'asc';
+    }
+    const users = await this.prismaService.user.findMany({
+      skip: +query.skip || 0,
+      take: +query.take || 20,
+      where: {
+        OR: [
+          {
+            fullName: {
+              contains: query.q || '',
+            },
+          },
+          {
+            email: {
+              contains: query.q || '',
+            },
+          },
+          {
+            phoneNumber: {
+              contains: query.q || '',
+            },
+          },
+        ],
+      },
+      orderBy: {
+        [fieldSort]: typeSort,
+      },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phoneNumber: true,
+        generation: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    return users;
+  }
+
   create(userBody: Prisma.UserCreateInput): Promise<UserDto> {
     return this.prismaService.user.create({
       data: { ...userBody, password: generateHash(userBody.password) },

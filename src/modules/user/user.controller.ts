@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ResponseMessage } from 'src/decorators/response.decorator';
@@ -32,6 +33,15 @@ export class UserController {
     const user = await this.userService.findOne(id);
     delete user.password;
     return user;
+  }
+
+  @Get()
+  @Admin()
+  @ResponseMessage('get all users successfully')
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Query() query: any) {
+    const users = await this.userService.findAll(query);
+    return users;
   }
 
   @Post()
