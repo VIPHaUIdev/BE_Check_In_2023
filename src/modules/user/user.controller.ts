@@ -17,6 +17,7 @@ import {
   ValidateUserDto,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
+import { ValidateQuery } from './dto/query.dto';
 
 @Controller({
   path: 'users',
@@ -36,10 +37,10 @@ export class UserController {
   }
 
   @Get()
-  @Admin()
+  // @Admin()
   @ResponseMessage('get all users successfully')
   @HttpCode(HttpStatus.OK)
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: ValidateQuery) {
     const users = await this.userService.findAll(query);
     return users;
   }

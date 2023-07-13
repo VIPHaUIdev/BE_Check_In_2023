@@ -1,9 +1,10 @@
-import { Injectable, UseGuards } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { FindOnePayload, UserDto } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
+import { ValidateQuery } from './dto/query.dto';
 
 @Injectable()
 export class UserService {
@@ -29,16 +30,19 @@ export class UserService {
     return user;
   }
 
-  async findAll(query: any) {
-    let fieldSort = 'createdAt';
-    let typeSort = 'asc';
+  async findAll(query: ValidateQuery) {
+    let fieldSort: string;
+    fieldSort = 'createdAt';
+    let typeSort: string;
+    typeSort = 'asc';
     if (query.sort) {
-      fieldSort = query.sort.split(':')[0] || 'createdAt';
-      typeSort = query.sort.split(':')[1] || 'asc';
+      const querySortSplit: string[] = query.sort.split(':');
+      fieldSort = querySortSplit[0] || 'createdAt';
+      typeSort = querySortSplit[1] || 'asc';
     }
     const users = await this.prismaService.user.findMany({
-      skip: +query.skip || 0,
-      take: +query.take || 20,
+      skip: query.skip || 0,
+      take: query.take || 20,
       where: {
         OR: [
           {
@@ -69,6 +73,7 @@ export class UserService {
         generation: true,
         role: true,
         createdAt: true,
+        isCheckin: true,
       },
     });
 
