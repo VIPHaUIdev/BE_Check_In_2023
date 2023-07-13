@@ -1,48 +1,24 @@
 import { Transform, TransformFnParams } from 'class-transformer';
-import {
-  IsInt,
-  IsOptional,
-  IsString,
-  Validate,
-  ValidationArguments,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
-
-@ValidatorConstraint({ name: 'IsPositiveNumber', async: false })
-export class IsPositiveNumberConstraint
-  implements ValidatorConstraintInterface
-{
-  validate(value: any) {
-    if (typeof value !== 'number') {
-      return false;
-    }
-    return value > 0;
-  }
-
-  defaultMessage(args: ValidationArguments) {
-    return `${args.property} must be a positive number.`;
-  }
-}
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class ValidateQuery {
   @IsInt()
-  @IsOptional() // Cho phép tham số trống (optional)
+  @IsOptional()
   @Transform(({ value }: TransformFnParams) => parseInt(value))
-  @Validate(IsPositiveNumberConstraint)
+  @Min(1)
   take?: number;
 
   @IsInt()
-  @IsOptional() // Cho phép tham số trống (optional)
+  @IsOptional()
   @Transform(({ value }: TransformFnParams) => parseInt(value))
-  @Validate(IsPositiveNumberConstraint)
+  @Min(0)
   skip?: number;
 
   @IsString()
-  @IsOptional() // Cho phép tham số trống (optional)
+  @IsOptional()
   q?: string;
 
   @IsString()
-  @IsOptional() // Cho phép tham số trống (optional)
+  @IsOptional()
   sort?: string;
 }

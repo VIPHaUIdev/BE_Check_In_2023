@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { FindOnePayload, UserDto } from './dto/user.dto';
+import {
+  FindOnePayload,
+  UserDto,
+  ValidateGetAllUsersDto,
+} from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
@@ -30,52 +34,51 @@ export class UserService {
     return user;
   }
 
-  async findAll(query: ValidateQuery) {
-    let fieldSort: string;
-    fieldSort = 'createdAt';
-    let typeSort: string;
-    typeSort = 'asc';
+  async findAll(query: ValidateQuery): Promise<ValidateGetAllUsersDto[]> {
+    let fieldSort: string = 'createdAt';
+    let typeSort: string = 'asc';
     if (query.sort) {
       const querySortSplit: string[] = query.sort.split(':');
       fieldSort = querySortSplit[0] || 'createdAt';
       typeSort = querySortSplit[1] || 'asc';
     }
-    const users = await this.prismaService.user.findMany({
-      skip: query.skip || 0,
-      take: query.take || 20,
-      where: {
-        OR: [
-          {
-            fullName: {
-              contains: query.q || '',
+    const users: ValidateGetAllUsersDto[] =
+      await this.prismaService.user.findMany({
+        skip: query.skip || 0,
+        take: query.take || 20,
+        where: {
+          OR: [
+            {
+              fullName: {
+                contains: query.q || '',
+              },
             },
-          },
-          {
-            email: {
-              contains: query.q || '',
+            {
+              email: {
+                contains: query.q || '',
+              },
             },
-          },
-          {
-            phoneNumber: {
-              contains: query.q || '',
+            {
+              phoneNumber: {
+                contains: query.q || '',
+              },
             },
-          },
-        ],
-      },
-      orderBy: {
-        [fieldSort]: typeSort,
-      },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        phoneNumber: true,
-        generation: true,
-        role: true,
-        createdAt: true,
-        isCheckin: true,
-      },
-    });
+          ],
+        },
+        orderBy: {
+          [fieldSort]: typeSort,
+        },
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          phoneNumber: true,
+          generation: true,
+          role: true,
+          createdAt: true,
+          isCheckin: true,
+        },
+      });
 
     return users;
   }
