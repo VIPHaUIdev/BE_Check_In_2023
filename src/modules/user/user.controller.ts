@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -13,7 +14,7 @@ import {
   CreateUserDto,
   FindOnePayload,
   UserDto,
-  ValidateUserDto,
+  InfoUserDto,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
 
@@ -44,10 +45,19 @@ export class UserController {
     return user;
   }
 
+  @Patch(':id')
+  // @Admin()
+  @ResponseMessage('Checkin successfully')
+  @HttpCode(HttpStatus.OK)
+  async checkIn(@Param('id') id: string): Promise<InfoUserDto> {
+    const updatedUser = await this.userService.checkin(id);
+    return updatedUser;
+  }
+
   @Post('/signup')
   @ResponseMessage('signup successfully')
   @HttpCode(HttpStatus.OK)
-  async signup(@Body() userDto: ValidateUserDto): Promise<UserDto> {
+  async signup(@Body() userDto: InfoUserDto): Promise<UserDto> {
     const user = await this.userService.signup(userDto);
     delete user.password;
     return user;
