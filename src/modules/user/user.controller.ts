@@ -47,6 +47,15 @@ export class UserController {
     return data;
   }
 
+  @Patch(':id')
+  @Admin()
+  @ResponseMessage('Checkin successfully')
+  @HttpCode(HttpStatus.OK)
+  async checkIn(@Param('id') id: string): Promise<InfoUserDto> {
+    const updatedUser = await this.userService.checkin(id);
+    return updatedUser;
+  }
+
   @Post()
   @Admin()
   @ResponseMessage('create success')
