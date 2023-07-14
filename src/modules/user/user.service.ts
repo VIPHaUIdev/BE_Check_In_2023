@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  FindOnePayload,
-  UserDto,
-  ValidateGetAllUsersDto,
-} from './dto/user.dto';
+import { FindOnePayload, UserDto, GetAllUsersDto } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
-import { ValidateQuery } from './dto/query.dto';
+import { QueryDto } from './dto/query.dto';
 
 @Injectable()
 export class UserService {
@@ -34,7 +30,7 @@ export class UserService {
     return user;
   }
 
-  async findAll(query: ValidateQuery): Promise<ValidateGetAllUsersDto[]> {
+  async findAll(query: QueryDto): Promise<object> {
     let fieldSort: string = 'createdAt';
     let typeSort: string = 'asc';
     if (query.sort) {
@@ -42,45 +38,49 @@ export class UserService {
       fieldSort = querySortSplit[0] || 'createdAt';
       typeSort = querySortSplit[1] || 'asc';
     }
-    const users: ValidateGetAllUsersDto[] =
-      await this.prismaService.user.findMany({
-        skip: query.skip || 0,
-        take: query.take || 20,
-        where: {
-          OR: [
-            {
-              fullName: {
-                contains: query.q || '',
+    const [users, length]: [GetAllUsersDto[], number] =
+      await this.prismaService.$transaction([
+        this.prismaService.user.findMany({
+          skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
+          take: query.limit || 20,
+          where: {
+            OR: [
+              {
+                fullName: {
+                  contains: query.q || '',
+                },
               },
-            },
-            {
-              email: {
-                contains: query.q || '',
+              {
+                email: {
+                  contains: query.q || '',
+                },
               },
-            },
-            {
-              phoneNumber: {
-                contains: query.q || '',
+              {
+                phoneNumber: {
+                  contains: query.q || '',
+                },
               },
-            },
-          ],
-        },
-        orderBy: {
-          [fieldSort]: typeSort,
-        },
-        select: {
-          id: true,
-          fullName: true,
-          email: true,
-          phoneNumber: true,
-          generation: true,
-          role: true,
-          createdAt: true,
-          isCheckin: true,
-        },
-      });
-
-    return users;
+            ],
+          },
+          orderBy: {
+            [fieldSort]: typeSort,
+          },
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            phoneNumber: true,
+            generation: true,
+            role: true,
+            createdAt: true,
+            isCheckin: true,
+          },
+        }),
+        this.prismaService.user.count(),
+      ]);
+    const page: number = query.page;
+    const limit: number = query.limit;
+    return { users, length, limit, page };
   }
 
   create(userBody: Prisma.UserCreateInput): Promise<UserDto> {

@@ -37,26 +37,13 @@ export class CreateUserDto extends ValidateUserDto {
   password: string;
 }
 
-export class ValidateGetAllUsersDto {
-  // currentPage: number;
-
-  // totalPage: number;
-
-  // quantity: number;
-
+export class GetAllUsersDto {
   id: string;
-
   fullName: string;
-
   email: string;
-
   phoneNumber: string;
-
   generation: string;
-
   role: string;
-
   createdAt: Date;
-
   isCheckin: boolean;
 }

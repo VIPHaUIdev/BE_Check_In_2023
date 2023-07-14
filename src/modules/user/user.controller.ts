@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -14,11 +15,10 @@ import {
   CreateUserDto,
   FindOnePayload,
   UserDto,
-  ValidateGetAllUsersDto,
   ValidateUserDto,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
-import { ValidateQuery } from './dto/query.dto';
+import { QueryDto } from './dto/query.dto';
 
 @Controller({
   path: 'users',
@@ -41,11 +41,9 @@ export class UserController {
   // @Admin()
   @ResponseMessage('get all users successfully')
   @HttpCode(HttpStatus.OK)
-  async findAll(
-    @Query() query: ValidateQuery,
-  ): Promise<ValidateGetAllUsersDto[]> {
-    const users = await this.userService.findAll(query);
-    return users;
+  async findAll(@Query() query: QueryDto) {
+    const data = await this.userService.findAll(query);
+    return data;
   }
 
   @Post()

@@ -1,18 +1,19 @@
 import { Transform, TransformFnParams } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
-export class ValidateQuery {
+export class QueryDto {
   @IsInt()
   @IsOptional()
   @Transform(({ value }: TransformFnParams) => parseInt(value))
   @Min(1)
-  take?: number;
+  @IsIn([20, 50, 100, 200])
+  limit?: number;
 
   @IsInt()
   @IsOptional()
   @Transform(({ value }: TransformFnParams) => parseInt(value))
   @Min(0)
-  skip?: number;
+  page?: number;
 
   @IsString()
   @IsOptional()
