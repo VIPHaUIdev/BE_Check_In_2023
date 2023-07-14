@@ -47,3 +47,13 @@ export class GetAllUsers {
   createdAt: Date;
   isCheckin: boolean;
 }
+
+export class findAllUsers {
+  users: GetAllUsers[];
+
+  count: number;
+
+  limit: number;
+
+  page: number;
+}

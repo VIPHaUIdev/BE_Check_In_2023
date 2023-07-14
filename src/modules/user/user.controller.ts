@@ -16,6 +16,7 @@ import {
   FindOnePayload,
   UserDto,
   ValidateUserDto,
+  findAllUsers,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
 import { QueryDto } from './dto/query.dto';
@@ -38,10 +39,10 @@ export class UserController {
   }
 
   @Get()
-  // @Admin()
+  @Admin()
   @ResponseMessage('get all users successfully')
   @HttpCode(HttpStatus.OK)
-  async findAll(@Query() query: QueryDto): Promise<object> {
+  async findAll(@Query() query: QueryDto): Promise<findAllUsers> {
     const data = await this.userService.findAll(query);
     return data;
   }

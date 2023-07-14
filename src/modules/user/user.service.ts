@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { FindOnePayload, UserDto, GetAllUsers } from './dto/user.dto';
+import {
+  FindOnePayload,
+  UserDto,
+  GetAllUsers,
+  findAllUsers,
+} from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
@@ -30,7 +35,7 @@ export class UserService {
     return user;
   }
 
-  async findAll(query: QueryDto): Promise<object> {
+  async findAll(query: QueryDto): Promise<findAllUsers> {
     let fieldSort: string = 'createdAt';
     let typeSort: string = 'asc';
     if (query.sort) {
@@ -38,7 +43,7 @@ export class UserService {
       fieldSort = querySortSplit[0] || 'createdAt';
       typeSort = querySortSplit[1] || 'asc';
     }
-    const [users, length]: [GetAllUsers[], number] =
+    const [users, count]: [GetAllUsers[], number] =
       await this.prismaService.$transaction([
         this.prismaService.user.findMany({
           skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
@@ -80,7 +85,7 @@ export class UserService {
       ]);
     const page: number = query.page;
     const limit: number = query.limit;
-    return { users, length, limit, page };
+    return { users, count, limit, page };
   }
 
   create(userBody: Prisma.UserCreateInput): Promise<UserDto> {
