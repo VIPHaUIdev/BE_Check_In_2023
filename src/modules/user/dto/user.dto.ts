@@ -48,7 +48,7 @@ export class GetAllUsers {
   isCheckin: boolean;
 }
 
-export class findAllUsers {
+export class findAllUsersResponse {
   users: GetAllUsers[];
 
   count: number;

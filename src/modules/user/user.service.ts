@@ -4,7 +4,7 @@ import {
   FindOnePayload,
   UserDto,
   GetAllUsers,
-  findAllUsers,
+  findAllUsersResponse,
 } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
@@ -35,9 +35,10 @@ export class UserService {
     return user;
   }
 
-  async findAll(query: QueryDto): Promise<findAllUsers> {
+  async findAll(query: QueryDto): Promise<findAllUsersResponse> {
     let fieldSort: string = 'createdAt';
     let typeSort: string = 'asc';
+    const isCheckinValue: boolean = query.isCheckin === 'true';
     if (query.sort) {
       const querySortSplit: string[] = query.sort.split(':');
       fieldSort = querySortSplit[0] || 'createdAt';
@@ -49,21 +50,28 @@ export class UserService {
           skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
           take: query.limit || 20,
           where: {
-            OR: [
+            AND: [
               {
-                fullName: {
-                  contains: query.q || '',
-                },
+                OR: [
+                  {
+                    fullName: {
+                      contains: query.q || '',
+                    },
+                  },
+                  {
+                    email: {
+                      contains: query.q || '',
+                    },
+                  },
+                  {
+                    phoneNumber: {
+                      contains: query.q || '',
+                    },
+                  },
+                ],
               },
               {
-                email: {
-                  contains: query.q || '',
-                },
-              },
-              {
-                phoneNumber: {
-                  contains: query.q || '',
-                },
+                isCheckin: isCheckinValue,
               },
             ],
           },

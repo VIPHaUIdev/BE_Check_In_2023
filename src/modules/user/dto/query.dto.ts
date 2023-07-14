@@ -1,5 +1,12 @@
 import { Transform, TransformFnParams } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsBooleanString,
+  IsIn,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class QueryDto {
   @IsInt()
@@ -22,4 +29,8 @@ export class QueryDto {
   @IsString()
   @IsOptional()
   sort?: string;
+
+  @IsBooleanString()
+  @IsOptional()
+  isCheckin?: string;
 }
