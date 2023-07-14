@@ -5,7 +5,9 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ResponseMessage } from 'src/decorators/response.decorator';
@@ -13,9 +15,11 @@ import {
   CreateUserDto,
   FindOnePayload,
   UserDto,
-  ValidateUserDto,
+  InfoUserDto,
+  findAllUsersResponse,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
+import { QueryDto } from './dto/query.dto';
 
 @Controller({
   path: 'users',
@@ -34,6 +38,15 @@ export class UserController {
     return user;
   }
 
+  @Get()
+  @Admin()
+  @ResponseMessage('get all users successfully')
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Query() query: QueryDto): Promise<findAllUsersResponse> {
+    const data = await this.userService.findAll(query);
+    return data;
+  }
+
   @Post()
   @Admin()
   @ResponseMessage('create success')
@@ -47,7 +60,7 @@ export class UserController {
   @Post('/signup')
   @ResponseMessage('signup successfully')
   @HttpCode(HttpStatus.OK)
-  async signup(@Body() userDto: ValidateUserDto): Promise<UserDto> {
+  async signup(@Body() userDto: InfoUserDto): Promise<UserDto> {
     const user = await this.userService.signup(userDto);
     delete user.password;
     return user;
