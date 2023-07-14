@@ -41,7 +41,7 @@ export class UserController {
   // @Admin()
   @ResponseMessage('get all users successfully')
   @HttpCode(HttpStatus.OK)
-  async findAll(@Query() query: QueryDto) {
+  async findAll(@Query() query: QueryDto): Promise<object> {
     const data = await this.userService.findAll(query);
     return data;
   }

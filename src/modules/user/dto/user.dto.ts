@@ -37,7 +37,7 @@ export class CreateUserDto extends ValidateUserDto {
   password: string;
 }
 
-export class GetAllUsersDto {
+export class GetAllUsers {
   id: string;
   fullName: string;
   email: string;

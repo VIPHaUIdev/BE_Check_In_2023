@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { FindOnePayload, UserDto, GetAllUsersDto } from './dto/user.dto';
+import { FindOnePayload, UserDto, GetAllUsers } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
@@ -38,7 +38,7 @@ export class UserService {
       fieldSort = querySortSplit[0] || 'createdAt';
       typeSort = querySortSplit[1] || 'asc';
     }
-    const [users, length]: [GetAllUsersDto[], number] =
+    const [users, length]: [GetAllUsers[], number] =
       await this.prismaService.$transaction([
         this.prismaService.user.findMany({
           skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
