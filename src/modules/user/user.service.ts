@@ -39,6 +39,28 @@ export class UserService {
     let fieldSort: string = 'createdAt';
     let typeSort: string = 'asc';
     const isCheckinValue: boolean = query.isCheckin === 'true';
+    const where: object = {
+      OR: [
+        {
+          fullName: {
+            contains: query.q || '',
+          },
+        },
+        {
+          email: {
+            contains: query.q || '',
+          },
+        },
+        {
+          phoneNumber: {
+            contains: query.q || '',
+          },
+        },
+      ],
+    };
+    if (query.isCheckin) {
+      where['isCheckin'] = isCheckinValue;
+    }
     if (query.sort) {
       const querySortSplit: string[] = query.sort.split(':');
       fieldSort = querySortSplit[0] || 'createdAt';
@@ -49,32 +71,7 @@ export class UserService {
         this.prismaService.user.findMany({
           skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
           take: query.limit || 20,
-          where: {
-            AND: [
-              {
-                OR: [
-                  {
-                    fullName: {
-                      contains: query.q || '',
-                    },
-                  },
-                  {
-                    email: {
-                      contains: query.q || '',
-                    },
-                  },
-                  {
-                    phoneNumber: {
-                      contains: query.q || '',
-                    },
-                  },
-                ],
-              },
-              {
-                isCheckin: isCheckinValue,
-              },
-            ],
-          },
+          where,
           orderBy: {
             [fieldSort]: typeSort,
           },
