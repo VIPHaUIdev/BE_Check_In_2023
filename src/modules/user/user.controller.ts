@@ -39,7 +39,7 @@ export class UserController {
   }
 
   @Get()
-  // @Admin()
+  @Admin()
   @ResponseMessage('get all users successfully')
   @HttpCode(HttpStatus.OK)
   async findAll(@Query() query: QueryDto): Promise<findAllUsersResponse> {
