@@ -1,6 +1,6 @@
 import { Transform, TransformFnParams } from 'class-transformer';
 import {
-  IsBooleanString,
+  IsBoolean,
   IsIn,
   IsInt,
   IsOptional,
@@ -30,7 +30,8 @@ export class QueryDto {
   @IsOptional()
   sort?: string;
 
-  @IsBooleanString()
   @IsOptional()
-  isCheckin?: string;
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  isCheckin?: boolean;
 }

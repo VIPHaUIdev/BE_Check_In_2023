@@ -15,7 +15,7 @@ import {
   CreateUserDto,
   FindOnePayload,
   UserDto,
-  ValidateUserDto,
+  InfoUserDto,
   findAllUsersResponse,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
@@ -60,7 +60,7 @@ export class UserController {
   @Post('/signup')
   @ResponseMessage('signup successfully')
   @HttpCode(HttpStatus.OK)
-  async signup(@Body() userDto: ValidateUserDto): Promise<UserDto> {
+  async signup(@Body() userDto: InfoUserDto): Promise<UserDto> {
     const user = await this.userService.signup(userDto);
     delete user.password;
     return user;
