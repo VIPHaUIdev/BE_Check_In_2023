@@ -5,7 +5,7 @@ import {
   UserDto,
   GetAllUsers,
   findAllUsersResponse,
-  InfoUserDto,
+  CheckinUserResponse,
 } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
@@ -94,7 +94,7 @@ export class UserService {
     return { users, count, limit, page };
   }
 
-  async checkin(id: string): Promise<InfoUserDto> {
+  async checkin(id: string): Promise<CheckinUserResponse> {
     const user = await this.prismaService.user.findFirst({ where: { id } });
 
     if (!user) {
@@ -103,16 +103,10 @@ export class UserService {
 
     const updatedUser = await this.prismaService.user.update({
       where: { id },
-      data: { isCheckin: false },
+      data: { isCheckin: true },
       select: {
-        id: true,
         fullName: true,
-        email: true,
-        phoneNumber: true,
         generation: true,
-        role: true,
-        createdAt: true,
-        isCheckin: true,
       },
     });
 
