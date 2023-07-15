@@ -11,6 +11,7 @@ import { UserNotFoundException } from '../../exceptions/user-not-found.exception
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
 import { QueryDto } from './dto/query.dto';
+import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-checkdin.exception';
 
 @Injectable()
 export class UserService {
@@ -99,6 +100,10 @@ export class UserService {
 
     if (!user) {
       throw new UserNotFoundException();
+    }
+
+    if (user.isCheckin) {
+      throw new UserAlreadyCheckedInException();
     }
 
     const updatedUser = await this.prismaService.user.update({
