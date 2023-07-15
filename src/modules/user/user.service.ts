@@ -5,11 +5,13 @@ import {
   UserDto,
   GetAllUsers,
   findAllUsersResponse,
+  CheckinUserResponse,
 } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
 import { QueryDto } from './dto/query.dto';
+import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-checkdin.exception';
 
 @Injectable()
 export class UserService {
@@ -91,6 +93,29 @@ export class UserService {
     const page: number = query.page;
     const limit: number = query.limit;
     return { users, count, limit, page };
+  }
+
+  async checkin(id: string): Promise<CheckinUserResponse> {
+    const user = await this.prismaService.user.findFirst({ where: { id } });
+
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    if (user.isCheckin) {
+      throw new UserAlreadyCheckedInException();
+    }
+
+    const updatedUser = await this.prismaService.user.update({
+      where: { id },
+      data: { isCheckin: true },
+      select: {
+        fullName: true,
+        generation: true,
+      },
+    });
+
+    return updatedUser;
   }
 
   create(userBody: Prisma.UserCreateInput): Promise<UserDto> {

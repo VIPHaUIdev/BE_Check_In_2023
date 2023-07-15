@@ -57,3 +57,8 @@ export class findAllUsersResponse {
 
   page: number;
 }
+
+export class CheckinUserResponse {
+  fullName: string;
+  generation: string;
+}
