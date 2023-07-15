@@ -18,6 +18,8 @@ import {
   InfoUserDto,
   findAllUsersResponse,
   CheckinUserResponse,
+  UpdateUserDto,
+  UpdateUserResponse,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
 import { QueryDto } from './dto/query.dto';
@@ -50,10 +52,22 @@ export class UserController {
 
   @Patch('/checkin/:id')
   @Admin()
-  @ResponseMessage('Checkin successfully')
+  @ResponseMessage('checkin successfully')
   @HttpCode(HttpStatus.OK)
   async checkIn(@Param('id') id: string): Promise<CheckinUserResponse> {
     const updatedUser = await this.userService.checkin(id);
+    return updatedUser;
+  }
+
+  @Patch(':id')
+  @Admin()
+  @ResponseMessage('update user successfully')
+  @HttpCode(HttpStatus.OK)
+  async updateUser(
+    @Param('id') id: string,
+    @Body() data: UpdateUserDto,
+  ): Promise<UpdateUserResponse> {
+    const updatedUser = await this.userService.updateUser(id, data);
     return updatedUser;
   }
 

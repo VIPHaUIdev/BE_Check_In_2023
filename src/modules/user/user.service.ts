@@ -6,6 +6,8 @@ import {
   GetAllUsers,
   findAllUsersResponse,
   CheckinUserResponse,
+  UpdateUserDto,
+  UpdateUserResponse,
 } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
@@ -112,6 +114,34 @@ export class UserService {
       select: {
         fullName: true,
         generation: true,
+      },
+    });
+
+    return updatedUser;
+  }
+
+  async updateUser(
+    id: string,
+    data: UpdateUserDto,
+  ): Promise<UpdateUserResponse> {
+    const user = await this.prismaService.user.findUnique({ where: { id } });
+
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    const updatedUser = await this.prismaService.user.update({
+      where: { id },
+      data: { ...data },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phoneNumber: true,
+        generation: true,
+        role: true,
+        createdAt: true,
+        isCheckin: true,
       },
     });
 
