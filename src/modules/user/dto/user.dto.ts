@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, MaxLength } from 'class-validator';
+import { Role } from '@prisma/client';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
+  IsEnum,
+} from 'class-validator';
 
 export class UserDto {
   id: string;
@@ -61,4 +69,46 @@ export class findAllUsersResponse {
 export class CheckinUserResponse {
   fullName: string;
   generation: string;
+}
+
+export class UpdateUserDto {
+  @IsNotEmpty()
+  @MaxLength(30)
+  @IsOptional()
+  fullName: string;
+
+  @IsNotEmpty()
+  @IsOptional()
+  generation: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role: Role;
+
+  @IsBoolean()
+  @IsOptional()
+  isCheckin: boolean;
+}
+
+export class UpdateUserResponse {
+  fullName: string;
+
+  generation: string;
+
+  phoneNumber: string;
+
+  email: string;
+
+  role: Role;
+
+  isCheckin: boolean;
 }
