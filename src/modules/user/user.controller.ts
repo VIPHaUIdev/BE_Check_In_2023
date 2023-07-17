@@ -8,7 +8,9 @@ import {
   Patch,
   Post,
   Query,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { UserService } from './user.service';
 import { ResponseMessage } from 'src/decorators/response.decorator';
 import {
@@ -23,13 +25,17 @@ import {
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
 import { QueryDto } from './dto/query.dto';
+import { SseService } from '../../shared/services/sse.service';
 
 @Controller({
   path: 'users',
   version: '1',
 })
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private sseService: SseService,
+  ) {}
 
   @Get(':id')
   @Admin()
@@ -42,7 +48,7 @@ export class UserController {
   }
 
   @Get()
-  @Admin()
+  // @Admin()
   @ResponseMessage('get all users successfully')
   @HttpCode(HttpStatus.OK)
   async findAll(@Query() query: QueryDto): Promise<findAllUsersResponse> {
@@ -88,5 +94,30 @@ export class UserController {
     const user = await this.userService.signup(userDto);
     delete user.password;
     return user;
+  }
+
+  @Get('/sse/realtime')
+  async streamCheckinData(@Res() res: Response, @Query() query: QueryDto) {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+
+    const sseObservable = this.sseService.getObservable();
+    if (!query.isCheckin) query.isCheckin = true;
+    const onData = async () => {
+      const checkinUsers = await this.userService.findAll(query);
+      res.write(`data: ${JSON.stringify(checkinUsers)}\n\n`);
+    };
+
+    const initialCheckinUsers = await this.userService.findAll(query);
+    res.write(`data: ${JSON.stringify(initialCheckinUsers)}\n\n`);
+
+    sseObservable.subscribe(onData);
+
+    res.on('close', () => {
+      this.sseService.unsubscribe();
+    });
   }
 }

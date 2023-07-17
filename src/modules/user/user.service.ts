@@ -14,10 +14,14 @@ import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
 import { QueryDto } from './dto/query.dto';
 import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-checkdin.exception';
+import { SseService } from 'src/shared/services/sse.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private sseService: SseService,
+  ) {}
 
   async findOne(account: string): Promise<FindOnePayload | null> {
     const user = await this.prismaService.user.findFirst({
@@ -117,6 +121,8 @@ export class UserService {
       },
     });
 
+    this.sseService.send('isCheckinUpdated');
+
     return updatedUser;
   }
 
@@ -146,6 +152,14 @@ export class UserService {
     });
 
     return updatedUser;
+  }
+
+  async getCheckinUsers() {
+    const checkinUsers = await this.prismaService.user.findMany({
+      where: { isCheckin: true },
+    });
+
+    return checkinUsers;
   }
 
   create(userBody: Prisma.UserCreateInput): Promise<UserDto> {
