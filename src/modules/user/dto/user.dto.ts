@@ -38,8 +38,8 @@ export class FindOnePayload {
   role: string;
   fullName: string;
   password: string;
+  generation: string;
 }
-
 export class CreateUserDto extends InfoUserDto {
   @IsNotEmpty()
   password: string;

@@ -1,34 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  FindOnePayload,
   UserDto,
   GetAllUsers,
   findAllUsersResponse,
   CheckinUserResponse,
   UpdateUserDto,
   UpdateUserResponse,
+  FindOnePayload,
 } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
 import { QueryDto } from './dto/query.dto';
 import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-checkdin.exception';
+import { SseService } from 'src/shared/services/sse.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private sseService: SseService,
+  ) {}
 
   async findOne(account: string): Promise<FindOnePayload | null> {
     const user = await this.prismaService.user.findFirst({
       where: {
-        OR: [{ phoneNumber: account }, { email: account }],
+        OR: [{ phoneNumber: account }, { email: account }, { id: account }],
       },
       select: {
         id: true,
         fullName: true,
-        password: true,
+        generation: true,
+        phoneNumber: true,
         role: true,
+        password: true,
       },
     });
 
@@ -116,6 +122,8 @@ export class UserService {
         generation: true,
       },
     });
+
+    this.sseService.send(id);
 
     return updatedUser;
   }

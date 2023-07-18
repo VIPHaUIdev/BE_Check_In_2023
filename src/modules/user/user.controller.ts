@@ -8,34 +8,40 @@ import {
   Patch,
   Post,
   Query,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { UserService } from './user.service';
 import { ResponseMessage } from 'src/decorators/response.decorator';
 import {
   CreateUserDto,
-  FindOnePayload,
   UserDto,
   InfoUserDto,
   findAllUsersResponse,
   CheckinUserResponse,
   UpdateUserDto,
   UpdateUserResponse,
+  FindOnePayload,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
 import { QueryDto } from './dto/query.dto';
+import { SseService } from '../../shared/services/sse.service';
 
 @Controller({
   path: 'users',
   version: '1',
 })
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private sseService: SseService,
+  ) {}
 
   @Get(':id')
   @Admin()
   @ResponseMessage('success')
   @HttpCode(HttpStatus.OK)
-  async getOne(@Param('id') id: string): Promise<FindOnePayload> {
+  async getOne(@Param('id') id: string): Promise<FindOnePayload | null> {
     const user = await this.userService.findOne(id);
     delete user.password;
     return user;
@@ -88,5 +94,28 @@ export class UserController {
     const user = await this.userService.signup(userDto);
     delete user.password;
     return user;
+  }
+
+  @Get('/sse')
+  async streamCheckinData(@Res() res: Response): Promise<void> {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+
+    const sseObservable = this.sseService.getObservable();
+    const onData = async (userId: string) => {
+      const checkinUsers = await this.userService.findOne(userId);
+      delete checkinUsers.password;
+      res.write(`data: ${JSON.stringify(checkinUsers)}\n\n`);
+    };
+    sseObservable.subscribe((userId: string) => {
+      onData(userId);
+    });
+
+    res.on('close', () => {
+      this.sseService.unsubscribe();
+    });
   }
 }

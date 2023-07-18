@@ -1,5 +1,4 @@
 import { Body, Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto, TokenPayloadDto } from './dto/auth.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { UserService } from '../user/user.service';
