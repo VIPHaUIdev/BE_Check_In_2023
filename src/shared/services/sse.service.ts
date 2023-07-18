@@ -15,14 +15,6 @@ export class SseService {
     return this.sseSubject.asObservable();
   }
 
-  setCheckedinUser(userId: string): void {
-    this.updatedUserId = userId;
-  }
-
-  getCheckedinUser(): string {
-    return this.updatedUserId;
-  }
-
   unsubscribe(): void {
     if (this.sseSubscription) {
       this.sseSubscription.unsubscribe();

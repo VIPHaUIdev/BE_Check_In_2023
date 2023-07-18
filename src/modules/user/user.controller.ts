@@ -57,7 +57,7 @@ export class UserController {
   }
 
   @Patch('/checkin/:id')
-  @Admin()
+  // @Admin()
   @ResponseMessage('checkin successfully')
   @HttpCode(HttpStatus.OK)
   async checkIn(@Param('id') id: string): Promise<CheckinUserResponse> {
@@ -105,13 +105,14 @@ export class UserController {
     res.flushHeaders();
 
     const sseObservable = this.sseService.getObservable();
-    const onData = async () => {
-      const userId = this.sseService.getCheckedinUser();
+    const onData = async (userId: string) => {
       const checkinUsers = await this.userService.findOne(userId);
       delete checkinUsers.password;
       res.write(`data: ${JSON.stringify(checkinUsers)}\n\n`);
     };
-    sseObservable.subscribe(onData);
+    sseObservable.subscribe((userId: string) => {
+      onData(userId);
+    });
 
     res.on('close', () => {
       this.sseService.unsubscribe();

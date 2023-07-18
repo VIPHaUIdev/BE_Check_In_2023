@@ -123,8 +123,7 @@ export class UserService {
       },
     });
 
-    this.sseService.setCheckedinUser(id);
-    this.sseService.send('isCheckinUpdated');
+    this.sseService.send(id);
 
     return updatedUser;
   }
