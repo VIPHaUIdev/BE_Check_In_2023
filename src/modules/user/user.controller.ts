@@ -57,7 +57,7 @@ export class UserController {
   }
 
   @Patch('/checkin/:id')
-  // @Admin()
+  @Admin()
   @ResponseMessage('checkin successfully')
   @HttpCode(HttpStatus.OK)
   async checkIn(@Param('id') id: string): Promise<CheckinUserResponse> {
