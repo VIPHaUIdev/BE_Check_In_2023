@@ -5,6 +5,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 export class SseService {
   private readonly sseSubject = new Subject<string>();
   private sseSubscription: Subscription;
+  private updatedUserId: string = '';
 
   send(data: string): void {
     this.sseSubject.next(data);
@@ -12,6 +13,14 @@ export class SseService {
 
   getObservable(): Observable<string> {
     return this.sseSubject.asObservable();
+  }
+
+  setCheckedinUser(userId: string): void {
+    this.updatedUserId = userId;
+  }
+
+  getCheckedinUser(): string {
+    return this.updatedUserId;
   }
 
   unsubscribe(): void {

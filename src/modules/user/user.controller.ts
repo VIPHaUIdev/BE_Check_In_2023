@@ -15,13 +15,13 @@ import { UserService } from './user.service';
 import { ResponseMessage } from 'src/decorators/response.decorator';
 import {
   CreateUserDto,
-  FindOnePayload,
   UserDto,
   InfoUserDto,
   findAllUsersResponse,
   CheckinUserResponse,
   UpdateUserDto,
   UpdateUserResponse,
+  FindOnePayload,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
 import { QueryDto } from './dto/query.dto';
@@ -41,14 +41,14 @@ export class UserController {
   @Admin()
   @ResponseMessage('success')
   @HttpCode(HttpStatus.OK)
-  async getOne(@Param('id') id: string): Promise<FindOnePayload> {
+  async getOne(@Param('id') id: string): Promise<FindOnePayload | null> {
     const user = await this.userService.findOne(id);
     delete user.password;
     return user;
   }
 
   @Get()
-  // @Admin()
+  @Admin()
   @ResponseMessage('get all users successfully')
   @HttpCode(HttpStatus.OK)
   async findAll(@Query() query: QueryDto): Promise<findAllUsersResponse> {
@@ -97,7 +97,7 @@ export class UserController {
   }
 
   @Get('/sse/realtime')
-  async streamCheckinData(@Res() res: Response, @Query() query: QueryDto) {
+  async streamCheckinData(@Res() res: Response): Promise<void> {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
@@ -105,15 +105,12 @@ export class UserController {
     res.flushHeaders();
 
     const sseObservable = this.sseService.getObservable();
-    if (!query.isCheckin) query.isCheckin = true;
     const onData = async () => {
-      const checkinUsers = await this.userService.findAll(query);
+      const userId = this.sseService.getCheckedinUser();
+      const checkinUsers = await this.userService.findOne(userId);
+      delete checkinUsers.password;
       res.write(`data: ${JSON.stringify(checkinUsers)}\n\n`);
     };
-
-    const initialCheckinUsers = await this.userService.findAll(query);
-    res.write(`data: ${JSON.stringify(initialCheckinUsers)}\n\n`);
-
     sseObservable.subscribe(onData);
 
     res.on('close', () => {
