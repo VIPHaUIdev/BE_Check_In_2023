@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   HttpCode,
   HttpStatus,
   Param,
@@ -37,16 +38,6 @@ export class UserController {
     private sseService: SseService,
   ) {}
 
-  @Get(':id')
-  @Admin()
-  @ResponseMessage('success')
-  @HttpCode(HttpStatus.OK)
-  async getOne(@Param('id') id: string): Promise<FindOnePayload | null> {
-    const user = await this.userService.findOne(id);
-    delete user.password;
-    return user;
-  }
-
   @Get()
   @Admin()
   @ResponseMessage('get all users successfully')
@@ -65,7 +56,7 @@ export class UserController {
     return updatedUser;
   }
 
-  @Patch(':id')
+  @Patch('/:id')
   @Admin()
   @ResponseMessage('update user successfully')
   @HttpCode(HttpStatus.OK)
@@ -117,5 +108,30 @@ export class UserController {
     res.on('close', () => {
       this.sseService.unsubscribe();
     });
+  }
+
+  @Get('/export-excel')
+  @Admin()
+  @Header(
+    'Content-type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
+  @Header(
+    'Content-Disposition',
+    'attachment; filename="Danh-sach-dang-ky.xlsx"',
+  )
+  async exportUsers(@Res() res: Response): Promise<void> {
+    const buffer = await this.userService.exportUsersToExcel();
+    res.send(buffer);
+  }
+
+  @Get('/:id')
+  @Admin()
+  @ResponseMessage('success')
+  @HttpCode(HttpStatus.OK)
+  async getOne(@Param('id') id: string): Promise<FindOnePayload | null> {
+    const user = await this.userService.findOne(id);
+    delete user.password;
+    return user;
   }
 }
