@@ -96,7 +96,7 @@ export class UserController {
     return user;
   }
 
-  @Get('/sse/realtime')
+  @Get('/sse')
   async streamCheckinData(@Res() res: Response): Promise<void> {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
