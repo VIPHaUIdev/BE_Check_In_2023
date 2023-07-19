@@ -15,6 +15,7 @@ import { generateHash } from 'src/common/utils';
 import { QueryDto } from './dto/query.dto';
 import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-checkdin.exception';
 import { SseService } from 'src/shared/services/sse.service';
+import * as ExcelJS from 'exceljs';
 
 @Injectable()
 export class UserService {
@@ -166,5 +167,47 @@ export class UserService {
     return this.prismaService.user.create({
       data: { ...userBody },
     });
+  }
+
+  async exportUsersToExcel(): Promise<ExcelJS.Buffer> {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Danh sách người đăng ký');
+    let stt: number = 0;
+
+    const users = await this.prismaService.user.findMany({
+      orderBy: { createdAt: 'asc' },
+    });
+
+    worksheet.columns = [
+      { header: 'STT', key: 'stt', width: 15 },
+      { header: 'ID', key: 'id', width: 20 },
+      { header: 'Họ và tên', key: 'fullName', width: 30 },
+      { header: 'Khoá', key: 'generation', width: 30 },
+      { header: 'Số điện thoại', key: 'phoneNumber', width: 30 },
+      { header: 'Email', key: 'email', width: 30 },
+      { header: 'Trạng thái check in', key: 'isCheckin', width: 20 },
+      { header: 'Ngày đăng ký', key: 'createdAt', width: 30 },
+    ];
+
+    for (const user of users) {
+      stt += 1;
+      worksheet.addRow({
+        stt,
+        id: user.id,
+        fullName: user.fullName,
+        generation: user.generation,
+        phoneNumber: user.phoneNumber,
+        email: user.email,
+        isCheckin: user.isCheckin === true ? 'Đã checkin' : 'Chưa checkin',
+        createdAt: user.createdAt
+          .toISOString()
+          .slice(0, 19)
+          .split('T')
+          .join(' '),
+      });
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer;
   }
 }
