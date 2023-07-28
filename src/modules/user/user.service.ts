@@ -163,8 +163,8 @@ export class UserService {
     });
   }
 
-  signup(userBody: Prisma.UserCreateInput): Promise<UserDto> {
-    return this.prismaService.user.create({
+  async signup(userBody: Prisma.UserCreateInput): Promise<UserDto> {
+    return await this.prismaService.user.create({
       data: { ...userBody },
     });
   }

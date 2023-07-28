@@ -11,6 +11,7 @@ import {
 export class UserDto {
   id: string;
   fullName: string;
+  email: string;
   generation: string;
   phoneNumber: string;
   isCheckin?: boolean;

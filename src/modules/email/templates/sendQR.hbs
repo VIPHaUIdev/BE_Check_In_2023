@@ -1,0 +1,172 @@
+<html>
+
+<head>
+    <title>Confirm register for V.I.P Birthday 2023</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #000;
+        }
+
+        p {
+            margin-bottom: 16px;
+            line-height: 1.5;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        table td {
+            padding: 8px;
+            font-size: 20px;
+            width: 30%;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        div.logo-container {
+            text-align: center;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        div.logo-container img {
+            max-width: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+
+        div.button-container {
+            text-align: center;
+        }
+
+        a.button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        .btn-fanpage {
+            margin: 20px 0;
+            display: inline-block;
+            padding: 12px 42px;
+            border-radius: 11px;
+            background: #e82133;
+            color: #f9f9f9 !important;
+            font-size: 14px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="logo-container"><img src="https://i.imgur.com/0dA03AY.png" alt="Logo" style="width: 100%; height: 50%; object-fit: center;" />
+        <p style="font-size: 34px">Xác nhận đăng kí tham gia sinh nhật 12 tuổi V.I.P thành công</p><span style="color: #968b8b; font-size: 18px">Chào mừng Duy đến với V.I.P Birthday 2023</span><br /><a class="btn-fanpage" href="https://www.facebook.com/clbtienganhV.I.P.haui">Fanpage</a>
+    </div>
+    <h2>Duy thân mến!</h2>
+    <p>Chào mừng bạn đã trở thành một thành viên trong sự kiện “V.I.P Birthday 2023”. V.I.P hi vọng bạn sẽ có những phút giây thật đáng nhớ trong suốt quá trình diễn ra sự kiện ở sinh nhật lần này.</p><br />
+    <p>Dưới đây là thông tin của bạn:</p>
+    <table>
+        <tr>
+            <td style="width: 28%">Họ và tên:</td>
+            <td> {{ fullName }}</td>
+        </tr>
+        <tr>
+            <td style="width: 28%">Số điện thoại:</td>
+            <td>{{ phoneNumber }}</td>
+        </tr>
+    </table><br />
+    <p>Thông tin sự kiện:</p>
+    <table>
+        <tr>
+            <td style="width: 28%">Tên:</td>
+            <td>V.I.P Birthday 2023</td>
+        </tr>
+        <tr>
+            <td style="width: 28%">Ngày tổ chức:</td>
+            <td>30/09/2023</td>
+        </tr>
+        <tr>
+            <td style="width: 28%">Địa điểm:</td>
+            <td>Nhà hàng Bông Hoa Hồng, Cầu Diễn, Hà Nội</td>
+        </tr>
+        <tr>
+            <td style="width: 28%">Link google maps:</td>
+            <td><a href="https://goo.gl/maps/z1pRLr27KZEwmi2y7">Xem tại đây</a></td>
+        </tr>
+    </table><br />
+    <p>Thông tin thanh toán của bạn:</p>
+    <table>
+        <tr>
+            <td style="width: 28%">Thời gian thanh toán:</td>
+            <td>1.000.000 VNĐ</td>
+        </tr>
+        <tr>
+            <td style="width: 28%">Tổng số tiền đã thanh toán:</td>
+            <td>1.000.000 VNĐ</td>
+        </tr>
+    </table>
+    <p>Mã QR Checkin của bạn:</p>
+        <img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={{userId}}&choe=UTF-8" alt="QR code"/>
+    <p>—------</p>
+    <p>Hẹn gặp lại bạn tại “V.I.P Birthday 2023”. Chúc bạn một ngày tốt lành.</p><br />
+    <p style="font-weight: bold">Mọi thắc mắc xin vui lòng liên hệ thông tin liên lạc sau: </p>
+    <p>Trường Đại học Công nghiệp Hà Nội (cơ sở 1)</p>
+    <p>Fanpage: <a href="https://www.facebook.com/clbtienganhV.I.P.haui">https://www.facebook.com/clbtienganhV.I.P.haui</a></p>
+    <p>Email: clbtienganhvip@gmail.com</p>
+    <p>Chủ nhiệm: Đặng Đức Duy (0816269002)</p>
+</body>
+
+</html>
