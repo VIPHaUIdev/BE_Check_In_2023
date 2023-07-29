@@ -14,9 +14,15 @@ export class EmailProcessor {
     try {
       await this.emailService.sendEmail(data);
       await this.emailService.createStatusEmail(data.userId, 'SENT');
+      await job.moveToCompleted('Email was sent successfully', true);
     } catch (err) {
-      await this.emailService.createStatusEmail(data.userId, 'FAILED');
-      console.log(err);
+      await this.emailService.createStatusEmail(
+        data.userId,
+        'FAILED',
+        err.message,
+      );
+      console.log('There are some trouble' + err);
+      await job.moveToCompleted('Email was sent failed', true);
     }
   }
 }

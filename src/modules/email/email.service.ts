@@ -60,11 +60,13 @@ export class EmailService {
   async createStatusEmail(
     userId: string,
     status: Status,
+    reason?: string,
   ): Promise<EmailRespone> {
     const email = await this.prismaService.email.create({
       data: {
         status,
         userId,
+        reason,
       },
     });
 

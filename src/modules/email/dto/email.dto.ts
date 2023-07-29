@@ -4,6 +4,8 @@ export class EmailRespone {
   userId: string;
 
   status: Status;
+
+  reason?: string;
 }
 
 export class EmailJobDto {
