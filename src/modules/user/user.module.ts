@@ -3,16 +3,9 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
-import { BullModule } from '@nestjs/bull';
 
 @Module({
-  imports: [
-    PrismaModule,
-    JwtModule,
-    BullModule.registerQueue({
-      name: 'email',
-    }),
-  ],
+  imports: [PrismaModule, JwtModule],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

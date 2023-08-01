@@ -14,37 +14,18 @@ model User {
   id          String   @id @default(uuid())
   email       String   @unique
   fullName    String
-  generation  Int
+  generation  String
   password    String?
   phoneNumber String   @unique
   isCheckin   Boolean  @default(false)
   role        Role     @default(USER)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  emailJob    Email[]
 
   @@map("users")
-}
-
-model Email {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  status    Status
-  reason    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@map("emails")
 }
 
 enum Role {
   USER
   ADMIN
-}
-
-enum Status {
-  PENDING
-  SUCCESS
-  ERROR
 }
