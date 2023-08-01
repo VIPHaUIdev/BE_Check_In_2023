@@ -44,17 +44,13 @@ export class EmailService {
     status: Status,
     reason?: string,
   ): Promise<void> {
-    try {
-      await this.prismaService.email.create({
-        data: {
-          status,
-          userId,
-          reason,
-        },
-      });
-    } catch (err) {
-      throw new Error(err);
-    }
+    await this.prismaService.email.create({
+      data: {
+        status,
+        userId,
+        reason,
+      },
+    });
   }
 
   async updateJob(
@@ -62,16 +58,12 @@ export class EmailService {
     status: Status,
     reason?: string,
   ): Promise<void> {
-    try {
-      await this.prismaService.email.update({
-        where: { userId },
-        data: {
-          status,
-          reason,
-        },
-      });
-    } catch (err) {
-      throw new Error(err);
-    }
+    await this.prismaService.email.update({
+      where: { userId },
+      data: {
+        status,
+        reason,
+      },
+    });
   }
 }
