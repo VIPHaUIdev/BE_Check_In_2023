@@ -1,28 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Process, Processor } from '@nestjs/bull';
 import { EmailService } from './email.service';
 import { Job } from 'bull';
 import { EmailJobDto } from './dto/email.dto';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Processor('email')
 @Injectable()
 export class EmailProcessor {
-  constructor(private emailService: EmailService) {}
+  constructor(
+    private emailService: EmailService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
+  ) {
+    console.log('Logger: ' + logger);
+  }
   @Process('sendEmail')
-  async sendEmailJob(job: Job<EmailJobDto>): Promise<void> {
+  async sendJob(job: Job<EmailJobDto>): Promise<void> {
     const data = { ...job.data };
     try {
-      await this.emailService.sendEmail(data);
-      await this.emailService.createStatusEmail(data.userId, 'SENT');
-      await job.moveToCompleted('Email was sent successfully', true);
+      await this.emailService.createJob(data.userId, 'PENDING');
+      this.logger.info('Send email for user', {
+        label: 'queue_email',
+      });
+      await this.emailService.send(data);
+      await this.emailService.updateJob(data.userId, 'SUCCESS');
     } catch (err) {
-      await this.emailService.createStatusEmail(
-        data.userId,
-        'FAILED',
-        err.message,
-      );
-      console.log('There are some trouble' + err);
-      await job.moveToCompleted('Email was sent failed', true);
+      await this.emailService.updateJob(data.userId, 'ERROR', err.response);
+      this.logger.error(err.stack, { label: 'errors_email_processor' });
     }
   }
 }

@@ -18,17 +18,15 @@ import { EmailModule } from './modules/email/email.module';
   imports: [
     BullModule.forRoot({
       redis: {
-        host: 'localhost',
-        port: 6379,
+        host: process.env.REDIS_HOST,
+        port: +process.env.REDIS_PORT,
       },
     }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    WinstonModule.forRoot({
-      instance: loggerIns,
-    }),
+    WinstonModule.forRoot(loggerIns),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 20,
@@ -52,6 +50,7 @@ import { EmailModule } from './modules/email/email.module';
   ],
 })
 export class AppModule implements NestModule {
+  emailProcessorInstance: any;
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HttpLoggerMiddleware).forRoutes('*');
   }

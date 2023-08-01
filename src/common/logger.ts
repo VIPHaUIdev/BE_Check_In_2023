@@ -9,8 +9,8 @@ const enumerateErrorFormat = winston.format((info) => {
   return info;
 });
 
-const fileTransport = new winston.transports.DailyRotateFile({
-  level: 'info',
+export const fileTransport = new winston.transports.DailyRotateFile({
+  level: 'info' || 'error' || 'debug',
   filename: './logs/log_%DATE%.log',
   datePattern: 'DD_MM_YYYY',
   zippedArchive: true,
@@ -38,7 +38,6 @@ export const loggerIns = winston.createLogger({
       stderrLevels: ['error'],
       format: winston.format.combine(winston.format.colorize(), formatLog),
     }),
-    // new winston.transports.File({ filename: './logs/vip.log' }),
     fileTransport,
   ],
 });

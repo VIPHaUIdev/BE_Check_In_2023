@@ -21,7 +21,7 @@ model User {
   role        Role     @default(USER)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  Email       Email[]
+  emailJob    Email[]
 
   @@map("users")
 }
@@ -34,6 +34,8 @@ model Email {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])
+
+  @@map("emails")
 }
 
 enum Role {
@@ -42,6 +44,7 @@ enum Role {
 }
 
 enum Status {
-  SENT
-  FAILED
+  PENDING
+  SUCCESS
+  ERROR
 }
