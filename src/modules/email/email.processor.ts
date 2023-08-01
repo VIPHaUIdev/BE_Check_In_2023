@@ -18,14 +18,15 @@ export class EmailProcessor {
     const data = { ...job.data };
     try {
       await this.emailService.createJob(data.userId, 'PENDING');
-      this.logger.info('Send email for user', {
-        label: 'queue_email',
+      this.logger.info(`Send email to ${data.email}`, {
+        label: 'sendJob',
       });
+
       await this.emailService.send(data);
       await this.emailService.updateJob(data.userId, 'SUCCESS');
     } catch (err) {
       await this.emailService.updateJob(data.userId, 'ERROR', err.response);
-      this.logger.error(err.stack, { label: 'errors_email_processor' });
+      this.logger.error(err.stack, { label: 'sendJob' });
     }
   }
 }

@@ -14,7 +14,7 @@ model User {
   id          String   @id @default(uuid())
   email       String   @unique
   fullName    String
-  generation  String
+  generation  Int
   password    String?
   phoneNumber String   @unique
   isCheckin   Boolean  @default(false)
