@@ -50,7 +50,6 @@ import { EmailModule } from './modules/email/email.module';
   ],
 })
 export class AppModule implements NestModule {
-  emailProcessorInstance: any;
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HttpLoggerMiddleware).forRoutes('*');
   }

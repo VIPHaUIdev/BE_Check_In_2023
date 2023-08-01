@@ -12,9 +12,7 @@ export class EmailProcessor {
   constructor(
     private emailService: EmailService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
-  ) {
-    console.log('Logger: ' + logger);
-  }
+  ) {}
   @Process('sendEmail')
   async sendJob(job: Job<EmailJobDto>): Promise<void> {
     const data = { ...job.data };
