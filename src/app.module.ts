@@ -8,19 +8,25 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { SharedModule } from './shared/shared.module';
+import { BullModule } from '@nestjs/bull';
 import { loggerIns } from './common/logger';
 import { HttpLoggerMiddleware } from './middlewares/http.logger.middleware';
 import { CustomThrottlerGuard } from './providers/custom-throttler-guard.provider';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: +process.env.REDIS_PORT,
+      },
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    WinstonModule.forRoot({
-      instance: loggerIns,
-    }),
+    WinstonModule.forRoot(loggerIns),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 20,
@@ -33,6 +39,7 @@ import { CustomThrottlerGuard } from './providers/custom-throttler-guard.provide
     AuthModule,
     UserModule,
     SharedModule,
+    EmailModule,
   ],
   providers: [
     {

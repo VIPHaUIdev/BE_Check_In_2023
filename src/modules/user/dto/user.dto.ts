@@ -11,7 +11,8 @@ import {
 export class UserDto {
   id: string;
   fullName: string;
-  generation: string;
+  email: string;
+  generation: number;
   phoneNumber: string;
   isCheckin?: boolean;
   password?: string;
@@ -23,7 +24,7 @@ export class InfoUserDto {
   fullName: string;
 
   @IsNotEmpty()
-  generation: string;
+  generation: number;
 
   @IsNotEmpty()
   phoneNumber: string;
@@ -38,7 +39,7 @@ export class FindOnePayload {
   role: string;
   fullName: string;
   password: string;
-  generation: string;
+  generation: number;
 }
 export class CreateUserDto extends InfoUserDto {
   @IsNotEmpty()
@@ -50,7 +51,7 @@ export class GetAllUsers {
   fullName: string;
   email: string;
   phoneNumber: string;
-  generation: string;
+  generation: number;
   role: string;
   createdAt: Date;
   isCheckin: boolean;
@@ -68,7 +69,7 @@ export class findAllUsersResponse {
 
 export class CheckinUserResponse {
   fullName: string;
-  generation: string;
+  generation: number;
 }
 
 export class UpdateUserDto {
@@ -79,7 +80,7 @@ export class UpdateUserDto {
 
   @IsNotEmpty()
   @IsOptional()
-  generation: string;
+  generation: number;
 
   @IsOptional()
   @IsNotEmpty()
@@ -102,7 +103,7 @@ export class UpdateUserDto {
 export class UpdateUserResponse {
   fullName: string;
 
-  generation: string;
+  generation: number;
 
   phoneNumber: string;
 

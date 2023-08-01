@@ -27,6 +27,8 @@ import {
 import { Admin } from 'src/decorators/auth.decorator';
 import { QueryDto } from './dto/query.dto';
 import { SseService } from '../../shared/services/sse.service';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Controller({
   path: 'users',
@@ -36,6 +38,7 @@ export class UserController {
   constructor(
     private userService: UserService,
     private sseService: SseService,
+    @InjectQueue('email') private readonly emailQueue: Queue,
   ) {}
 
   @Get()
@@ -84,6 +87,14 @@ export class UserController {
   async signup(@Body() userDto: InfoUserDto): Promise<UserDto> {
     const user = await this.userService.signup(userDto);
     delete user.password;
+
+    await this.emailQueue.add('sendEmail', {
+      email: user.email,
+      userId: user.id,
+      fullName: user.fullName,
+      phoneNumber: user.phoneNumber,
+    });
+
     return user;
   }
 

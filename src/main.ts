@@ -15,9 +15,7 @@ import { ErrorsInterceptor } from './interceptors/errors.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: WinstonModule.createLogger({
-      instance: loggerIns,
-    }),
+    logger: WinstonModule.createLogger(loggerIns),
   });
   app.setGlobalPrefix('api');
   const reflector = app.get(Reflector);
