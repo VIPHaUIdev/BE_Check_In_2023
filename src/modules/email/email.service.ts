@@ -4,7 +4,8 @@ import { Status } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
 import * as hbs from 'handlebars';
 import * as fs from 'fs-extra';
-import { EmailJobDto } from './dto/email.dto';
+import { EmailJobDto, GetAllJobsResponse } from './dto/email.dto';
+import { QueryDto } from '../user/dto/query.dto';
 
 @Injectable()
 export class EmailService {
@@ -65,5 +66,46 @@ export class EmailService {
         reason,
       },
     });
+  }
+
+  async getJobs(query: QueryDto): Promise<GetAllJobsResponse> {
+    let fieldSort: string = 'createdAt';
+    let typeSort: string = 'asc';
+    if (query.sort) {
+      const querySortSplit: string[] = query.sort.split(':');
+      fieldSort = querySortSplit[0] || 'createdAt';
+      typeSort = querySortSplit[1] || 'asc';
+    }
+    const [emails, count] = await this.prismaService.$transaction([
+      this.prismaService.email.findMany({
+        skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
+        take: query.limit || 20,
+        where: {
+          user: {
+            email: {
+              contains: query.q || '',
+            },
+          },
+        },
+        orderBy: {
+          [fieldSort]: typeSort,
+        },
+        select: {
+          id: true,
+          status: true,
+          reason: true,
+          createdAt: true,
+          user: {
+            select: {
+              email: true,
+            },
+          },
+        },
+      }),
+      this.prismaService.email.count(),
+    ]);
+    const page: number = query.page;
+    const limit: number = query.limit;
+    return { emails, count, limit, page };
   }
 }

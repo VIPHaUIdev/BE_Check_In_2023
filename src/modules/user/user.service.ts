@@ -12,7 +12,7 @@ import {
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
-import { QueryDto } from './dto/query.dto';
+import { QueryUserDto } from './dto/query.dto';
 import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-checkdin.exception';
 import { SseService } from 'src/shared/services/sse.service';
 import * as ExcelJS from 'exceljs';
@@ -46,7 +46,7 @@ export class UserService {
     return user;
   }
 
-  async findAll(query: QueryDto): Promise<findAllUsersResponse> {
+  async findAll(query: QueryUserDto): Promise<findAllUsersResponse> {
     let fieldSort: string = 'createdAt';
     let typeSort: string = 'asc';
     if (query.sort) {

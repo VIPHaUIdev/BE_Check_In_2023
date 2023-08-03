@@ -25,10 +25,12 @@ import {
   FindOnePayload,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
-import { QueryDto } from './dto/query.dto';
+import { QueryDto, QueryUserDto } from './dto/query.dto';
 import { SseService } from '../../shared/services/sse.service';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { EmailService } from '../email/email.service';
+import { GetAllJobsResponse } from '../email/dto/email.dto';
 
 @Controller({
   path: 'users',
@@ -38,6 +40,7 @@ export class UserController {
   constructor(
     private userService: UserService,
     private sseService: SseService,
+    private emailService: EmailService,
     @InjectQueue('email') private readonly emailQueue: Queue,
   ) {}
 
@@ -45,7 +48,7 @@ export class UserController {
   @Admin()
   @ResponseMessage('get all users successfully')
   @HttpCode(HttpStatus.OK)
-  async findAll(@Query() query: QueryDto): Promise<findAllUsersResponse> {
+  async findAll(@Query() query: QueryUserDto): Promise<findAllUsersResponse> {
     const data = await this.userService.findAll(query);
     return data;
   }
@@ -134,6 +137,15 @@ export class UserController {
   async exportUsers(@Res() res: Response): Promise<void> {
     const buffer = await this.userService.exportUsersToExcel();
     res.send(buffer);
+  }
+
+  @Get('/email-jobs')
+  @Admin()
+  @ResponseMessage('get all email jobs successfully')
+  @HttpCode(HttpStatus.OK)
+  async getAllEmailJobs(@Query() query: QueryDto): Promise<GetAllJobsResponse> {
+    const data = await this.emailService.getJobs(query);
+    return data;
   }
 
   @Get('/:id')

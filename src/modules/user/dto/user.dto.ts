@@ -59,11 +59,8 @@ export class GetAllUsers {
 
 export class findAllUsersResponse {
   users: GetAllUsers[];
-
   count: number;
-
   limit: number;
-
   page: number;
 }
 

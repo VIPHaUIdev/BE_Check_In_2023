@@ -29,7 +29,9 @@ export class QueryDto {
   @IsString()
   @IsOptional()
   sort?: string;
+}
 
+export class QueryUserDto extends QueryDto {
   @IsOptional()
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
