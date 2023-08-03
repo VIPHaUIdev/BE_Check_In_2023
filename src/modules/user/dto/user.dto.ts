@@ -99,14 +99,9 @@ export class UpdateUserDto {
 
 export class UpdateUserResponse {
   fullName: string;
-
   generation: number;
-
   phoneNumber: string;
-
   email: string;
-
   role: Role;
-
   isCheckin: boolean;
 }

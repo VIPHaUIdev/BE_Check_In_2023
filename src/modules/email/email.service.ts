@@ -5,7 +5,7 @@ import * as nodemailer from 'nodemailer';
 import * as hbs from 'handlebars';
 import * as fs from 'fs-extra';
 import { EmailJobDto, GetAllJobsResponse } from './dto/email.dto';
-import { QueryDto } from '../user/dto/query.dto';
+import { QueryJobDto } from './dto/query.dto';
 
 @Injectable()
 export class EmailService {
@@ -68,7 +68,7 @@ export class EmailService {
     });
   }
 
-  async getJobs(query: QueryDto): Promise<GetAllJobsResponse> {
+  async getJobs(query: QueryJobDto): Promise<GetAllJobsResponse> {
     let fieldSort: string = 'createdAt';
     let typeSort: string = 'asc';
     if (query.sort) {
@@ -81,11 +81,16 @@ export class EmailService {
         skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
         take: query.limit || 20,
         where: {
-          user: {
-            email: {
-              contains: query.q || '',
+          AND: [
+            {
+              user: {
+                email: {
+                  contains: query.q || '',
+                },
+              },
             },
-          },
+            { status: query.status },
+          ],
         },
         orderBy: {
           [fieldSort]: typeSort,
@@ -102,7 +107,20 @@ export class EmailService {
           },
         },
       }),
-      this.prismaService.email.count(),
+      this.prismaService.email.count({
+        where: {
+          AND: [
+            {
+              user: {
+                email: {
+                  contains: query.q || '',
+                },
+              },
+            },
+            { status: query.status },
+          ],
+        },
+      }),
     ]);
     const page: number = query.page;
     const limit: number = query.limit;

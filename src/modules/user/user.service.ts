@@ -97,7 +97,32 @@ export class UserService {
             isCheckin: true,
           },
         }),
-        this.prismaService.user.count(),
+        this.prismaService.user.count({
+          where: {
+            AND: [
+              {
+                OR: [
+                  {
+                    fullName: {
+                      contains: query.q || '',
+                    },
+                  },
+                  {
+                    email: {
+                      contains: query.q || '',
+                    },
+                  },
+                  {
+                    phoneNumber: {
+                      contains: query.q || '',
+                    },
+                  },
+                ],
+              },
+              { isCheckin: query.isCheckin },
+            ],
+          },
+        }),
       ]);
     const page: number = query.page;
     const limit: number = query.limit;

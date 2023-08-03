@@ -25,12 +25,13 @@ import {
   FindOnePayload,
 } from './dto/user.dto';
 import { Admin } from 'src/decorators/auth.decorator';
-import { QueryDto, QueryUserDto } from './dto/query.dto';
+import { QueryUserDto } from './dto/query.dto';
 import { SseService } from '../../shared/services/sse.service';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { EmailService } from '../email/email.service';
 import { GetAllJobsResponse } from '../email/dto/email.dto';
+import { QueryJobDto } from '../email/dto/query.dto';
 
 @Controller({
   path: 'users',
@@ -143,7 +144,9 @@ export class UserController {
   @Admin()
   @ResponseMessage('get all email jobs successfully')
   @HttpCode(HttpStatus.OK)
-  async getAllEmailJobs(@Query() query: QueryDto): Promise<GetAllJobsResponse> {
+  async getAllEmailJobs(
+    @Query() query: QueryJobDto,
+  ): Promise<GetAllJobsResponse> {
     const data = await this.emailService.getJobs(query);
     return data;
   }

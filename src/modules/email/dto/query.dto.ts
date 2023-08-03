@@ -1,6 +1,7 @@
+import { Status } from '@prisma/client';
 import { Transform, TransformFnParams } from 'class-transformer';
 import {
-  IsBoolean,
+  IsEnum,
   IsIn,
   IsInt,
   IsOptional,
@@ -8,7 +9,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class QueryUserDto {
+export class QueryJobDto {
   @IsInt()
   @IsOptional()
   @Transform(({ value }: TransformFnParams) => parseInt(value))
@@ -31,7 +32,6 @@ export class QueryUserDto {
   sort?: string;
 
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
-  @IsBoolean()
-  isCheckin?: boolean;
+  @IsEnum(Status)
+  status?: Status;
 }
