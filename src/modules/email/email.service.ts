@@ -76,22 +76,23 @@ export class EmailService {
       fieldSort = querySortSplit[0] || 'createdAt';
       typeSort = querySortSplit[1] || 'asc';
     }
+    const where: object = {
+      AND: [
+        {
+          user: {
+            email: {
+              contains: query.q || '',
+            },
+          },
+        },
+        { status: query.status },
+      ],
+    };
     const [emails, count] = await this.prismaService.$transaction([
       this.prismaService.email.findMany({
         skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
         take: query.limit || 20,
-        where: {
-          AND: [
-            {
-              user: {
-                email: {
-                  contains: query.q || '',
-                },
-              },
-            },
-            { status: query.status },
-          ],
-        },
+        where,
         orderBy: {
           [fieldSort]: typeSort,
         },
@@ -108,18 +109,7 @@ export class EmailService {
         },
       }),
       this.prismaService.email.count({
-        where: {
-          AND: [
-            {
-              user: {
-                email: {
-                  contains: query.q || '',
-                },
-              },
-            },
-            { status: query.status },
-          ],
-        },
+        where,
       }),
     ]);
     const page: number = query.page;

@@ -54,35 +54,36 @@ export class UserService {
       fieldSort = querySortSplit[0] || 'createdAt';
       typeSort = querySortSplit[1] || 'asc';
     }
+    const where: object = {
+      AND: [
+        {
+          OR: [
+            {
+              fullName: {
+                contains: query.q || '',
+              },
+            },
+            {
+              email: {
+                contains: query.q || '',
+              },
+            },
+            {
+              phoneNumber: {
+                contains: query.q || '',
+              },
+            },
+          ],
+        },
+        { isCheckin: query.isCheckin },
+      ],
+    };
     const [users, count]: [GetAllUsers[], number] =
       await this.prismaService.$transaction([
         this.prismaService.user.findMany({
           skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
           take: query.limit || 20,
-          where: {
-            AND: [
-              {
-                OR: [
-                  {
-                    fullName: {
-                      contains: query.q || '',
-                    },
-                  },
-                  {
-                    email: {
-                      contains: query.q || '',
-                    },
-                  },
-                  {
-                    phoneNumber: {
-                      contains: query.q || '',
-                    },
-                  },
-                ],
-              },
-              { isCheckin: query.isCheckin },
-            ],
-          },
+          where,
           orderBy: {
             [fieldSort]: typeSort,
           },
@@ -98,30 +99,7 @@ export class UserService {
           },
         }),
         this.prismaService.user.count({
-          where: {
-            AND: [
-              {
-                OR: [
-                  {
-                    fullName: {
-                      contains: query.q || '',
-                    },
-                  },
-                  {
-                    email: {
-                      contains: query.q || '',
-                    },
-                  },
-                  {
-                    phoneNumber: {
-                      contains: query.q || '',
-                    },
-                  },
-                ],
-              },
-              { isCheckin: query.isCheckin },
-            ],
-          },
+          where,
         }),
       ]);
     const page: number = query.page;
