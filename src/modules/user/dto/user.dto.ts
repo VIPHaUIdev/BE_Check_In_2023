@@ -59,11 +59,8 @@ export class GetAllUsers {
 
 export class findAllUsersResponse {
   users: GetAllUsers[];
-
   count: number;
-
   limit: number;
-
   page: number;
 }
 
@@ -102,14 +99,9 @@ export class UpdateUserDto {
 
 export class UpdateUserResponse {
   fullName: string;
-
   generation: number;
-
   phoneNumber: string;
-
   email: string;
-
   role: Role;
-
   isCheckin: boolean;
 }

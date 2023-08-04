@@ -12,7 +12,7 @@ import {
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
-import { QueryDto } from './dto/query.dto';
+import { QueryUserDto } from './dto/query.dto';
 import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-checkdin.exception';
 import { SseService } from 'src/shared/services/sse.service';
 import * as ExcelJS from 'exceljs';
@@ -46,7 +46,7 @@ export class UserService {
     return user;
   }
 
-  async findAll(query: QueryDto): Promise<findAllUsersResponse> {
+  async findAll(query: QueryUserDto): Promise<findAllUsersResponse> {
     let fieldSort: string = 'createdAt';
     let typeSort: string = 'asc';
     if (query.sort) {
@@ -54,35 +54,36 @@ export class UserService {
       fieldSort = querySortSplit[0] || 'createdAt';
       typeSort = querySortSplit[1] || 'asc';
     }
+    const where: object = {
+      AND: [
+        {
+          OR: [
+            {
+              fullName: {
+                contains: query.q || '',
+              },
+            },
+            {
+              email: {
+                contains: query.q || '',
+              },
+            },
+            {
+              phoneNumber: {
+                contains: query.q || '',
+              },
+            },
+          ],
+        },
+        { isCheckin: query.isCheckin },
+      ],
+    };
     const [users, count]: [GetAllUsers[], number] =
       await this.prismaService.$transaction([
         this.prismaService.user.findMany({
           skip: query.page > 1 ? (query.page - 1) * query.limit : 0,
           take: query.limit || 20,
-          where: {
-            AND: [
-              {
-                OR: [
-                  {
-                    fullName: {
-                      contains: query.q || '',
-                    },
-                  },
-                  {
-                    email: {
-                      contains: query.q || '',
-                    },
-                  },
-                  {
-                    phoneNumber: {
-                      contains: query.q || '',
-                    },
-                  },
-                ],
-              },
-              { isCheckin: query.isCheckin },
-            ],
-          },
+          where,
           orderBy: {
             [fieldSort]: typeSort,
           },
@@ -97,7 +98,9 @@ export class UserService {
             isCheckin: true,
           },
         }),
-        this.prismaService.user.count(),
+        this.prismaService.user.count({
+          where,
+        }),
       ]);
     const page: number = query.page;
     const limit: number = query.limit;
