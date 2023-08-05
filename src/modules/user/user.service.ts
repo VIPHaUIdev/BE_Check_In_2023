@@ -16,6 +16,8 @@ import { QueryUserDto } from './dto/query.dto';
 import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-checkdin.exception';
 import { SseService } from 'src/shared/services/sse.service';
 import * as ExcelJS from 'exceljs';
+import { SignupAdminDto } from './dto/admin.dto';
+import { SecretCodeIsIncorrect } from 'src/exceptions/secret-code-incorrect.exception';
 
 @Injectable()
 export class UserService {
@@ -160,9 +162,23 @@ export class UserService {
     return updatedUser;
   }
 
-  create(userBody: Prisma.UserCreateInput): Promise<UserDto> {
-    return this.prismaService.user.create({
+  async create(userBody: Prisma.UserCreateInput): Promise<UserDto> {
+    return await this.prismaService.user.create({
       data: { ...userBody, password: generateHash(userBody.password) },
+    });
+  }
+
+  async signupAdmin(signupAdmin: SignupAdminDto): Promise<UserDto> {
+    if (signupAdmin.secretCode !== process.env.CODE_SECRET) {
+      throw new SecretCodeIsIncorrect();
+    }
+    delete signupAdmin.secretCode;
+    return await this.prismaService.user.create({
+      data: {
+        ...signupAdmin,
+        password: generateHash(signupAdmin.password),
+        role: 'ADMIN',
+      },
     });
   }
 
