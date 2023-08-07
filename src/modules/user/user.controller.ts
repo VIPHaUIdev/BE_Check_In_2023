@@ -77,12 +77,24 @@ export class UserController {
 
   @Post()
   @Admin()
-  @ResponseMessage('create success')
+  @ResponseMessage('create successfully')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUser: CreateUserDto): Promise<UserDto> {
     const user = await this.userService.create(createUser);
     delete user.password;
     return user;
+  }
+
+  @Post('/signup/admin')
+  @ResponseMessage('sign up admin successfully')
+  @HttpCode(HttpStatus.CREATED)
+  async signupAdmin(
+    @Body() adminBody: CreateUserDto,
+    @Query('secret') code: string,
+  ): Promise<UserDto> {
+    const admin = await this.userService.signupAdmin(adminBody, code);
+    delete admin.password;
+    return admin;
   }
 
   @Post('/signup')
