@@ -32,7 +32,6 @@ import { Queue } from 'bull';
 import { EmailService } from '../email/email.service';
 import { GetAllJobsResponse } from '../email/dto/email.dto';
 import { QueryJobDto } from '../email/dto/query.dto';
-import { SignupAdminDto } from './dto/admin.dto';
 
 @Controller({
   path: 'users',
@@ -86,11 +85,14 @@ export class UserController {
     return user;
   }
 
-  @Post('/signup/admin')
+  @Post('/signup/admin/:code')
   @ResponseMessage('sign up admin successfully')
   @HttpCode(HttpStatus.CREATED)
-  async signupAdmin(@Body() adminBody: SignupAdminDto): Promise<UserDto> {
-    const admin = await this.userService.signupAdmin(adminBody);
+  async signupAdmin(
+    @Body() adminBody: CreateUserDto,
+    @Param('code') code: string,
+  ): Promise<UserDto> {
+    const admin = await this.userService.signupAdmin(adminBody, code);
     delete admin.password;
     return admin;
   }
