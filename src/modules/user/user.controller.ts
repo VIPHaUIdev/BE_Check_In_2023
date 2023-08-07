@@ -85,12 +85,12 @@ export class UserController {
     return user;
   }
 
-  @Post('/signup/admin/:code')
+  @Post('/signup/admin')
   @ResponseMessage('sign up admin successfully')
   @HttpCode(HttpStatus.CREATED)
   async signupAdmin(
     @Body() adminBody: CreateUserDto,
-    @Param('code') code: string,
+    @Query('secret') code: string,
   ): Promise<UserDto> {
     const admin = await this.userService.signupAdmin(adminBody, code);
     delete admin.password;
