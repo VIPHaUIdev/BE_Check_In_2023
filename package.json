@@ -14,7 +14,8 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "migrate": "npx prisma migrate dev --name migrate",
-    "backup": "node dist/common/backupDB"
+    "backup": "node dist/common/backupDB",
+    "restore": "node dist/common/backupDB"
   },
   "dependencies": {
     "@nestjs/bull": "^10.0.1",

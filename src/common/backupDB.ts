@@ -1,7 +1,10 @@
 import { exec } from 'child_process';
 import * as dotenv from 'dotenv';
 import { loggerIns } from './logger';
+import * as fs from 'fs-extra';
 dotenv.config();
+
+const arg = process.argv.slice(2)[0];
 
 function parseConnectionString(connectionString: string) {
   const matches = connectionString.match(/\/\/(.*?):(.*?)@(.*?):\d+\/(.*)/);
@@ -44,4 +47,30 @@ function backupDB() {
   );
 }
 
-backupDB();
+function restoreDB(fileName: string) {
+  if (fs.existsSync(`backups/${fileName}`)) {
+    const { username, password, database } = parseConnectionString(
+      process.env.DATABASE_URL,
+    );
+    exec(
+      `cat backups/${fileName} | docker exec -i db_checkin /usr/bin/mysql -u ${username} --password=${password} ${database}`,
+
+      (error, stdout, stderr) => {
+        if (error) {
+          loggerIns.error(error.message, { label: 'restoreDB' });
+        }
+        loggerIns.info('Restore database successfully', { label: 'restoreDB' });
+        loggerIns.debug(`stdout: ${stdout}`, { label: 'restoreDB' });
+        loggerIns.debug(`stderr: ${stderr}`, { label: 'restoreDB' });
+      },
+    );
+  } else {
+    loggerIns.error('File name is invalid', { label: 'restoreDB' });
+  }
+}
+
+if (arg) {
+  restoreDB(arg);
+} else {
+  backupDB();
+}
