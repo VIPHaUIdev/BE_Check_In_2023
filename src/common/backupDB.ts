@@ -32,7 +32,7 @@ function backupDB() {
   const backupFileName = `${timestamp}.sql`;
 
   exec(
-    `docker exec ${process.env.CONTAINER_NAME} /usr/bin/mysqldump -u ${username} --password=${password} ${database} > backups/${backupFileName}`,
+    `docker exec db_checkin /usr/bin/mysqldump -u ${username} --password=${password} ${database} > backups/${backupFileName}`,
     (error, stdout, stderr) => {
       if (error) {
         loggerIns.error(error.message, { label: 'backupDB' });
