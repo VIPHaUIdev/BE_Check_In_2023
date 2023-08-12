@@ -4,7 +4,7 @@ import { loggerIns } from './logger';
 import * as fs from 'fs-extra';
 dotenv.config();
 
-const arg = process.argv.slice(2)[0];
+const arg: string = process.argv.slice(2)[0];
 
 function parseConnectionString(connectionString: string) {
   const matches = connectionString.match(/\/\/(.*?):(.*?)@(.*?):\d+\/(.*)/);
@@ -16,7 +16,7 @@ function parseConnectionString(connectionString: string) {
   return null;
 }
 
-function formatDateTime(date) {
+function formatDateTime(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -27,7 +27,7 @@ function formatDateTime(date) {
   return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
 }
 
-function backupDB() {
+export function backupDB(): void {
   const { username, password, database } = parseConnectionString(
     process.env.DATABASE_URL,
   );
@@ -47,7 +47,7 @@ function backupDB() {
   );
 }
 
-function restoreDB(fileName: string) {
+function restoreDB(fileName: string): void {
   if (fs.existsSync(`backups/${fileName}`)) {
     const { username, password, database } = parseConnectionString(
       process.env.DATABASE_URL,
