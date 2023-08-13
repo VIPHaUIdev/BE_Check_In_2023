@@ -40,6 +40,7 @@ export class FindOnePayload {
   fullName: string;
   password: string;
   generation: number;
+  isCheckin: boolean;
 }
 export class CreateUserDto extends InfoUserDto {
   @IsNotEmpty()

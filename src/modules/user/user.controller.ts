@@ -54,6 +54,17 @@ export class UserController {
     return data;
   }
 
+  @Patch('/checkin')
+  @Admin()
+  @ResponseMessage('checkin by email or phone successfully')
+  @HttpCode(HttpStatus.OK)
+  async checkInByEmailPhone(
+    @Query('q') account: string,
+  ): Promise<CheckinUserResponse> {
+    const updatedUser = await this.userService.checkin(account);
+    return updatedUser;
+  }
+
   @Patch('/checkin/:id')
   @Admin()
   @ResponseMessage('checkin successfully')

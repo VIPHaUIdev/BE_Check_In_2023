@@ -38,6 +38,7 @@ export class UserService {
         phoneNumber: true,
         role: true,
         password: true,
+        isCheckin: true,
       },
     });
 
@@ -109,19 +110,15 @@ export class UserService {
     return { users, count, limit, page };
   }
 
-  async checkin(id: string): Promise<CheckinUserResponse> {
-    const user = await this.prismaService.user.findFirst({ where: { id } });
-
-    if (!user) {
-      throw new UserNotFoundException();
-    }
+  async checkin(account: string): Promise<CheckinUserResponse> {
+    const user = await this.findOne(account);
 
     if (user.isCheckin) {
       throw new UserAlreadyCheckedInException();
     }
 
     const updatedUser = await this.prismaService.user.update({
-      where: { id },
+      where: { id: user.id },
       data: { isCheckin: true },
       select: {
         fullName: true,
@@ -129,7 +126,7 @@ export class UserService {
       },
     });
 
-    this.sseService.send(id);
+    this.sseService.send(user.id);
 
     return updatedUser;
   }
