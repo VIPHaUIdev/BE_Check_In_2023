@@ -4,7 +4,7 @@ import { loggerIns } from './logger';
 import * as fs from 'fs-extra';
 dotenv.config();
 
-const arg: string = process.argv.slice(2)[0];
+const args: string[] = process.argv.slice(2);
 
 function parseConnectionString(connectionString: string) {
   const matches = connectionString.match(/\/\/(.*?):(.*?)@(.*?):\d+\/(.*)/);
@@ -69,8 +69,8 @@ function restoreDB(fileName: string): void {
   }
 }
 
-if (arg) {
-  restoreDB(arg);
-} else {
+if (args[0] === 'restore') {
+  restoreDB(args[1]);
+} else if (args[0] === 'backup') {
   backupDB();
 }
