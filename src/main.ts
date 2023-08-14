@@ -12,6 +12,8 @@ import { PrismaClientExceptionFilter } from './filters/prisma-client.filter';
 import { TransformInterceptor } from './interceptors/response.interceptor';
 import { loggerIns } from './common/logger';
 import { ErrorsInterceptor } from './interceptors/errors.interceptor';
+import * as schedule from 'node-schedule';
+import { backupDB } from './common/backupDB';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -43,6 +45,10 @@ async function bootstrap() {
       exceptionFactory: (errors) => new UnprocessableEntityException(errors),
     }),
   );
+
+  schedule.scheduleJob('0 * * * *', () => {
+    backupDB();
+  });
 
   await app.listen(3000);
 }

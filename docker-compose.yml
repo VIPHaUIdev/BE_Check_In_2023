@@ -3,6 +3,7 @@ version: '3'
 services:
   mysql:
     image: mysql:8
+    container_name: db_checkin
     environment:
       MYSQL_DATABASE: "vip"
       MYSQL_ROOT_PASSWORD: "vip"
