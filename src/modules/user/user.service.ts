@@ -29,7 +29,7 @@ export class UserService {
   async findOne(account: string): Promise<FindOnePayload | null> {
     const user = await this.prismaService.user.findFirst({
       where: {
-        OR: [{ phoneNumber: account }, { email: account }, { id: account }],
+        OR: [{ phoneNumber: account }, { email: account }],
       },
       select: {
         id: true,
@@ -110,8 +110,37 @@ export class UserService {
     return { users, count, limit, page };
   }
 
-  async checkin(account: string): Promise<CheckinUserResponse> {
-    const user = await this.findOne(account);
+  async findOneById(id: string): Promise<FindOnePayload | null> {
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        fullName: true,
+        generation: true,
+        phoneNumber: true,
+        role: true,
+        password: true,
+        isCheckin: true,
+      },
+    });
+
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    return user;
+  }
+
+  async checkin(
+    account: string,
+    type: string = 'id',
+  ): Promise<CheckinUserResponse> {
+    const user =
+      type === 'email-phone'
+        ? await this.findOne(account)
+        : await this.findOneById(account);
 
     if (user.isCheckin) {
       throw new UserAlreadyCheckedInException();

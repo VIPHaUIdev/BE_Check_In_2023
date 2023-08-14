@@ -61,7 +61,7 @@ export class UserController {
   async checkInByEmailPhone(
     @Query('q') account: string,
   ): Promise<CheckinUserResponse> {
-    const updatedUser = await this.userService.checkin(account);
+    const updatedUser = await this.userService.checkin(account, 'email-phone');
     return updatedUser;
   }
 
@@ -135,7 +135,7 @@ export class UserController {
 
     const sseObservable = this.sseService.getObservable();
     const onData = async (userId: string) => {
-      const checkinUsers = await this.userService.findOne(userId);
+      const checkinUsers = await this.userService.findOneById(userId);
       delete checkinUsers.password;
       res.write(`data: ${JSON.stringify(checkinUsers)}\n\n`);
     };
@@ -179,7 +179,7 @@ export class UserController {
   @ResponseMessage('success')
   @HttpCode(HttpStatus.OK)
   async getOne(@Param('id') id: string): Promise<FindOnePayload | null> {
-    const user = await this.userService.findOne(id);
+    const user = await this.userService.findOneById(id);
     delete user.password;
     return user;
   }
