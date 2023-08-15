@@ -163,16 +163,17 @@ export class UserService {
   async updateUser(
     id: string,
     data: UpdateUserDto,
+    image: string,
   ): Promise<UpdateUserResponse> {
     const user = await this.prismaService.user.findUnique({ where: { id } });
 
     if (!user) {
       throw new UserNotFoundException();
     }
-
+    data.generation = +data.generation;
     const updatedUser = await this.prismaService.user.update({
       where: { id },
-      data: { ...data },
+      data: { ...data, image },
       select: {
         id: true,
         fullName: true,
@@ -210,9 +211,13 @@ export class UserService {
     });
   }
 
-  async signup(userBody: Prisma.UserCreateInput): Promise<UserDto> {
+  async signup(
+    userBody: Prisma.UserCreateInput,
+    image: string,
+  ): Promise<UserDto> {
+    userBody.generation = +userBody.generation;
     return await this.prismaService.user.create({
-      data: { ...userBody },
+      data: { ...userBody, image: image },
     });
   }
 

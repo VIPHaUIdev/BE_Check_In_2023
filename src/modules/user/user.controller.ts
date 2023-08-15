@@ -1,15 +1,19 @@
 import {
   Body,
   Controller,
+  FileTypeValidator,
   Get,
   Header,
   HttpCode,
   HttpStatus,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Patch,
   Post,
   Query,
   Res,
+  UploadedFile,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -32,6 +36,7 @@ import { Queue } from 'bull';
 import { EmailService } from '../email/email.service';
 import { GetAllJobsResponse } from '../email/dto/email.dto';
 import { QueryJobDto } from '../email/dto/query.dto';
+import { FileUpload } from 'src/decorators/file-upload.decorator';
 
 @Controller({
   path: 'users',
@@ -78,12 +83,58 @@ export class UserController {
   @Admin()
   @ResponseMessage('update user successfully')
   @HttpCode(HttpStatus.OK)
+  @FileUpload('image')
   async updateUser(
     @Param('id') id: string,
     @Body() data: UpdateUserDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 10000000 }),
+          new FileTypeValidator({ fileType: 'image/*' }),
+        ],
+        fileIsRequired: false,
+      }),
+    )
+    image: Express.Multer.File,
   ): Promise<UpdateUserResponse> {
-    const updatedUser = await this.userService.updateUser(id, data);
+    const updatedUser = await this.userService.updateUser(
+      id,
+      data,
+      image?.filename,
+    );
+
     return updatedUser;
+  }
+
+  @Post('/signup')
+  @ResponseMessage('signup successfully')
+  @HttpCode(HttpStatus.OK)
+  @FileUpload('image')
+  async signup(
+    @Body() userDto: InfoUserDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 10000000 }),
+          new FileTypeValidator({ fileType: 'image/*' }),
+        ],
+        fileIsRequired: false,
+      }),
+    )
+    image: Express.Multer.File,
+  ): Promise<UserDto> {
+    const user = await this.userService.signup(userDto, image?.filename);
+    delete user.password;
+
+    await this.emailQueue.add('sendEmail', {
+      email: user.email,
+      userId: user.id,
+      fullName: user.fullName,
+      phoneNumber: user.phoneNumber,
+    });
+
+    return user;
   }
 
   @Post()
@@ -106,23 +157,6 @@ export class UserController {
     const admin = await this.userService.signupAdmin(adminBody, code);
     delete admin.password;
     return admin;
-  }
-
-  @Post('/signup')
-  @ResponseMessage('signup successfully')
-  @HttpCode(HttpStatus.OK)
-  async signup(@Body() userDto: InfoUserDto): Promise<UserDto> {
-    const user = await this.userService.signup(userDto);
-    delete user.password;
-
-    await this.emailQueue.add('sendEmail', {
-      email: user.email,
-      userId: user.id,
-      fullName: user.fullName,
-      phoneNumber: user.phoneNumber,
-    });
-
-    return user;
   }
 
   @Get('/sse')
