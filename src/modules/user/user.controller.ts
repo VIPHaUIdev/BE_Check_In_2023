@@ -54,6 +54,17 @@ export class UserController {
     return data;
   }
 
+  @Patch('/checkin')
+  @Admin()
+  @ResponseMessage('checkin by email or phone successfully')
+  @HttpCode(HttpStatus.OK)
+  async checkInByEmailPhone(
+    @Query('q') account: string,
+  ): Promise<CheckinUserResponse> {
+    const updatedUser = await this.userService.checkin(account, 'email-phone');
+    return updatedUser;
+  }
+
   @Patch('/checkin/:id')
   @Admin()
   @ResponseMessage('checkin successfully')
@@ -124,7 +135,7 @@ export class UserController {
 
     const sseObservable = this.sseService.getObservable();
     const onData = async (userId: string) => {
-      const checkinUsers = await this.userService.findOne(userId);
+      const checkinUsers = await this.userService.findOneById(userId);
       delete checkinUsers.password;
       res.write(`data: ${JSON.stringify(checkinUsers)}\n\n`);
     };
@@ -168,7 +179,7 @@ export class UserController {
   @ResponseMessage('success')
   @HttpCode(HttpStatus.OK)
   async getOne(@Param('id') id: string): Promise<FindOnePayload | null> {
-    const user = await this.userService.findOne(id);
+    const user = await this.userService.findOneById(id);
     delete user.password;
     return user;
   }
