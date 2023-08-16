@@ -174,6 +174,14 @@ export class UserController {
     return data;
   }
 
+  @Get('/renew-qr')
+  @ResponseMessage('renew QR code successfully')
+  @HttpCode(HttpStatus.OK)
+  async renewQR(@Query('q') account: string): Promise<string | null> {
+    const user = await this.userService.findOne(account);
+    return user.id;
+  }
+
   @Get('/:id')
   @Admin()
   @ResponseMessage('success')
