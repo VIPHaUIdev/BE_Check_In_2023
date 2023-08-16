@@ -179,7 +179,6 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async renewQR(@Query('q') account: string): Promise<string | null> {
     const user = await this.userService.findOne(account);
-    delete user.password;
     return user.id;
   }
 
