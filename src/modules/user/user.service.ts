@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   UserDto,
@@ -19,6 +19,9 @@ import { SseService } from 'src/shared/services/sse.service';
 import * as ExcelJS from 'exceljs';
 import { SecretCodeIsIncorrect } from 'src/exceptions/secret-code-incorrect.exception';
 import { JwtService } from '@nestjs/jwt';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { TokenHasExpired } from 'src/exceptions/token-has-expired.exception';
 
 @Injectable()
 export class UserService {
@@ -26,6 +29,7 @@ export class UserService {
     private readonly prismaService: PrismaService,
     private sseService: SseService,
     private jwtService: JwtService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async findOne(account: string): Promise<FindOnePayload | null> {
@@ -263,5 +267,23 @@ export class UserService {
 
   async generateToken(userId: string): Promise<string> {
     return await this.jwtService.signAsync({ userId });
+  }
+  async checkLink(token: string): Promise<string | null> {
+    try {
+      const tokenCache = await this.cacheManager.get('jwt');
+      if (tokenCache === token) {
+        throw new TokenHasExpired();
+      }
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      const user = await this.prismaService.user.findUnique({
+        where: { id: payload.userId },
+      });
+
+      return user.fullName;
+    } catch {
+      throw new UnauthorizedException();
+    }
   }
 }

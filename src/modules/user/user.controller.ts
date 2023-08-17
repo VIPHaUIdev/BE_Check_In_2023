@@ -211,6 +211,14 @@ export class UserController {
     return user.id;
   }
 
+  @Get('/check-link')
+  @ResponseMessage('check link successfully')
+  @HttpCode(HttpStatus.OK)
+  async checkLink(@Headers('jwt') token: string): Promise<string | null> {
+    const userName = await this.userService.checkLink(token);
+    return userName;
+  }
+
   @Get('/:id')
   @Admin()
   @ResponseMessage('success')
