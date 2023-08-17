@@ -163,7 +163,6 @@ export class UserService {
   async updateUser(
     id: string,
     data: UpdateUserDto,
-    image: string,
   ): Promise<UpdateUserResponse> {
     const user = await this.prismaService.user.findUnique({ where: { id } });
 
@@ -173,7 +172,7 @@ export class UserService {
     data.generation = +data.generation;
     const updatedUser = await this.prismaService.user.update({
       where: { id },
-      data: { ...data, image },
+      data: { ...data },
       select: {
         id: true,
         fullName: true,
@@ -211,13 +210,10 @@ export class UserService {
     });
   }
 
-  async signup(
-    userBody: Prisma.UserCreateInput,
-    image: string,
-  ): Promise<UserDto> {
+  async signup(userBody: Prisma.UserCreateInput): Promise<UserDto> {
     userBody.generation = +userBody.generation;
     return await this.prismaService.user.create({
-      data: { ...userBody, image: image },
+      data: { ...userBody },
     });
   }
 

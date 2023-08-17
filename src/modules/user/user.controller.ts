@@ -1,14 +1,11 @@
 import {
   Body,
   Controller,
-  FileTypeValidator,
   Get,
   Header,
   HttpCode,
   HttpStatus,
-  MaxFileSizeValidator,
   Param,
-  ParseFilePipe,
   Patch,
   Post,
   Query,
@@ -87,22 +84,10 @@ export class UserController {
   async updateUser(
     @Param('id') id: string,
     @Body() data: UpdateUserDto,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 10000000 }),
-          new FileTypeValidator({ fileType: 'image/*' }),
-        ],
-        fileIsRequired: false,
-      }),
-    )
-    image: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
   ): Promise<UpdateUserResponse> {
-    const updatedUser = await this.userService.updateUser(
-      id,
-      data,
-      image?.filename,
-    );
+    data.image = image ? image.filename : null;
+    const updatedUser = await this.userService.updateUser(id, data);
 
     return updatedUser;
   }
@@ -113,18 +98,10 @@ export class UserController {
   @FileUpload('image')
   async signup(
     @Body() userDto: InfoUserDto,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 10000000 }),
-          new FileTypeValidator({ fileType: 'image/*' }),
-        ],
-        fileIsRequired: false,
-      }),
-    )
-    image: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
   ): Promise<UserDto> {
-    const user = await this.userService.signup(userDto, image?.filename);
+    userDto.image = image ? image.filename : null;
+    const user = await this.userService.signup(userDto);
     delete user.password;
 
     await this.emailQueue.add('sendEmail', {

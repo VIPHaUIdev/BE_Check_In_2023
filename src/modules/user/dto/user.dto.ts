@@ -6,6 +6,7 @@ import {
   IsOptional,
   MaxLength,
   IsEnum,
+  IsString,
 } from 'class-validator';
 
 export class UserDto {
@@ -32,6 +33,10 @@ export class InfoUserDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
 
 export class FindOnePayload {
@@ -96,6 +101,10 @@ export class UpdateUserDto {
   @IsBoolean()
   @IsOptional()
   isCheckin: boolean;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
 }
 
 export class UpdateUserResponse {
