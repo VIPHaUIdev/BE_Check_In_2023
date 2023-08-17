@@ -174,6 +174,14 @@ export class UserController {
     return data;
   }
 
+  @Get('/generate-link')
+  @ResponseMessage('get token successfully')
+  @HttpCode(HttpStatus.OK)
+  async generateLink(@Query('q') userId: string): Promise<string> {
+    const token = await this.userService.generateToken(userId);
+    return token;
+  }
+
   @Get('/renew-qr')
   @ResponseMessage('renew QR code successfully')
   @HttpCode(HttpStatus.OK)
