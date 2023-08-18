@@ -213,7 +213,7 @@ export class UserController {
   }
 
   @Get('/check-link')
-  @ResponseMessage('The link is still usable')
+  @ResponseMessage('the link is still usable')
   @HttpCode(HttpStatus.OK)
   async checkLink(@Headers('jwt') token: string): Promise<string | null> {
     const userName = await this.userService.checkLink(token);
