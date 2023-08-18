@@ -176,7 +176,7 @@ export class UserController {
 
   @Get('/generate-link')
   @Admin()
-  @ResponseMessage('get token successfully')
+  @ResponseMessage('generate link successfully')
   @HttpCode(HttpStatus.OK)
   async generateLink(@Query('q') userId: string): Promise<string> {
     const token = await this.userService.generateToken(userId);
