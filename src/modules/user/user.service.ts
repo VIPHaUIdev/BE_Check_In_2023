@@ -18,12 +18,14 @@ import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-check
 import { SseService } from 'src/shared/services/sse.service';
 import * as ExcelJS from 'exceljs';
 import { SecretCodeIsIncorrect } from 'src/exceptions/secret-code-incorrect.exception';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prismaService: PrismaService,
     private sseService: SseService,
+    private jwtService: JwtService,
   ) {}
 
   async findOne(account: string): Promise<FindOnePayload | null> {
@@ -257,5 +259,9 @@ export class UserService {
 
     const buffer = await workbook.xlsx.writeBuffer();
     return buffer;
+  }
+
+  async generateToken(userId: string): Promise<string> {
+    return await this.jwtService.signAsync({ userId });
   }
 }
