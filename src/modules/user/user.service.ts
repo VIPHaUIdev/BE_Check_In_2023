@@ -169,7 +169,7 @@ export class UserService {
     if (!user) {
       throw new UserNotFoundException();
     }
-
+    data.generation = +data.generation;
     const updatedUser = await this.prismaService.user.update({
       where: { id },
       data: { ...data },
@@ -211,6 +211,7 @@ export class UserService {
   }
 
   async signup(userBody: Prisma.UserCreateInput): Promise<UserDto> {
+    userBody.generation = +userBody.generation;
     return await this.prismaService.user.create({
       data: { ...userBody },
     });
