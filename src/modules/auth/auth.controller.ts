@@ -3,12 +3,14 @@ import { ResponseMessage } from 'src/decorators/response.decorator';
 import { LoginDto, LoginPayloadDto } from './dto/auth.dto';
 import { AuthService } from './auth.service';
 import { SkipThrottle } from '@nestjs/throttler';
+import { Recaptcha } from '@nestlab/google-recaptcha';
 
 @Controller({
   path: 'auth',
   version: '1',
 })
 @SkipThrottle(false)
+@Recaptcha()
 export class AuthController {
   constructor(private authService: AuthService) {}
 
