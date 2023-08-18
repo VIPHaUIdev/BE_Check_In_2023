@@ -18,6 +18,7 @@ import { backupDB } from './common/backupDB';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger(loggerIns),
+    cors: true,
   });
   app.setGlobalPrefix('api');
   const reflector = app.get(Reflector);
