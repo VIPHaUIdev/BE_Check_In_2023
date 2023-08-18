@@ -215,6 +215,8 @@ export class UserController {
     return userName;
   }
   @Patch('/update-image')
+  @SkipThrottle(false)
+  @Recaptcha()
   @ResponseMessage('update image successfully')
   @HttpCode(HttpStatus.OK)
   @FileUpload('image')
