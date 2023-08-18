@@ -270,13 +270,13 @@ export class UserService {
   }
   async checkLink(token: string): Promise<string | null> {
     try {
-      const tokenCache = await this.cacheManager.get('jwt');
-      if (tokenCache === token) {
-        throw new TokenHasExpired();
-      }
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
+      const tokenCache = await this.cacheManager.get(payload.userId);
+      if (tokenCache === token) {
+        throw new TokenHasExpired();
+      }
       const user = await this.prismaService.user.findUnique({
         where: { id: payload.userId },
       });

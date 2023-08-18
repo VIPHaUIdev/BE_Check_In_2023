@@ -2,6 +2,6 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class TokenHasExpired extends HttpException {
   constructor() {
-    super('Token has expired', HttpStatus.BAD_REQUEST);
+    super('token has expired', HttpStatus.BAD_REQUEST);
   }
 }
