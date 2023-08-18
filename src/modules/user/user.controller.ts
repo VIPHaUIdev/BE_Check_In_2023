@@ -82,22 +82,6 @@ export class UserController {
     return updatedUser;
   }
 
-  @Patch('/:id')
-  @Admin()
-  @ResponseMessage('update user successfully')
-  @HttpCode(HttpStatus.OK)
-  @FileUpload('image')
-  async updateUser(
-    @Param('id') id: string,
-    @Body() data: UpdateUserDto,
-    @UploadedFile() image: Express.Multer.File,
-  ): Promise<UpdateUserResponse> {
-    data.image = image ? image.filename : null;
-    const updatedUser = await this.userService.updateUser(id, data);
-
-    return updatedUser;
-  }
-
   @Post('/signup')
   @SkipThrottle(false)
   @Recaptcha()
@@ -229,6 +213,33 @@ export class UserController {
       token,
     );
     return userName;
+  }
+  @Patch('/update-image')
+  @ResponseMessage('update image successfully')
+  @HttpCode(HttpStatus.OK)
+  @FileUpload('image')
+  async updateImage(
+    @Query('q') token: string,
+    @UploadedFile() image: Express.Multer.File,
+  ): Promise<string | null> {
+    const messgae = await this.userService.updateImage(token, image?.filename);
+    return messgae;
+  }
+
+  @Patch('/:id')
+  @Admin()
+  @ResponseMessage('update user successfully')
+  @HttpCode(HttpStatus.OK)
+  @FileUpload('image')
+  async updateUser(
+    @Param('id') id: string,
+    @Body() data: UpdateUserDto,
+    @UploadedFile() image: Express.Multer.File,
+  ): Promise<UpdateUserResponse> {
+    data.image = image ? image.filename : null;
+    const updatedUser = await this.userService.updateUser(id, data);
+
+    return updatedUser;
   }
 
   @Get('/:id')
