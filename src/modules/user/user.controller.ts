@@ -10,6 +10,7 @@ import {
   Post,
   Query,
   Res,
+  Headers,
   UploadedFile,
 } from '@nestjs/common';
 import { Response } from 'express';
