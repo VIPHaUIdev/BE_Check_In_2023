@@ -213,6 +213,7 @@ export class UserController {
   }
 
   @Get('/check-link')
+  @SkipThrottle(false)
   @ResponseMessage('the link is still usable')
   @HttpCode(HttpStatus.OK)
   async checkLink(@Headers('jwt') token: string): Promise<string | null> {
