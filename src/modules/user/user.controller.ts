@@ -131,7 +131,6 @@ export class UserController {
 
   @Post('/signup/admin')
   @SkipThrottle(false)
-  @Recaptcha()
   @ResponseMessage('sign up admin successfully')
   @HttpCode(HttpStatus.CREATED)
   async signupAdmin(
