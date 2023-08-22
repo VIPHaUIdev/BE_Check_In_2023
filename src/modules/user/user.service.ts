@@ -277,18 +277,19 @@ export class UserService {
 
     return user.fullName;
   }
-  async updateImage(token: string, image: string): Promise<string | null> {
+  async updateImage(
+    userId: string,
+    token: string,
+    image: string,
+  ): Promise<string | null> {
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET,
-      });
-      const user = await this.findOneById(payload.userId);
+      const user = await this.findOneById(userId);
       image = image.replace('undefined', user.phoneNumber);
       await this.prismaService.user.update({
-        where: { id: payload.userId },
+        where: { id: userId },
         data: { image },
       });
-      await this.cacheManager.set(payload.userId, token, 3600);
+      await this.cacheManager.set(userId, token, 3600);
       return 'Update image successfully';
     } catch {
       throw new UnauthorizedException();

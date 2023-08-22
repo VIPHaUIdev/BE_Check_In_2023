@@ -11,6 +11,8 @@ import {
   Query,
   Req,
   Res,
+  Request,
+  Headers,
   UploadedFile,
   Headers,
   Request,
@@ -37,8 +39,6 @@ import { EmailService } from '../email/email.service';
 import { GetAllJobsResponse } from '../email/dto/email.dto';
 import { QueryJobDto } from '../email/dto/query.dto';
 import { FileUpload } from 'src/decorators/file-upload.decorator';
-import { SkipThrottle } from '@nestjs/throttler';
-import { Recaptcha } from '@nestlab/google-recaptcha';
 
 @SkipThrottle()
 @Controller({
@@ -215,16 +215,21 @@ export class UserController {
     return userName;
   }
   @Patch('/update-image')
-  @SkipThrottle(false)
-  @Recaptcha()
+  @Auth()
+  @FileUpload('image')
   @ResponseMessage('update image successfully')
   @HttpCode(HttpStatus.OK)
-  @FileUpload('image')
   async updateImage(
-    @Query('q') token: string,
+    @Req() req: Request,
+    @Headers('Authorization') authorizationHeader: string,
     @UploadedFile() image: Express.Multer.File,
   ): Promise<string | null> {
-    const messgae = await this.userService.updateImage(token, image?.filename);
+    const token = authorizationHeader.replace('Bearer ', '');
+    const messgae = await this.userService.updateImage(
+      req['user'].userId,
+      token,
+      image?.filename,
+    );
     return messgae;
   }
 
