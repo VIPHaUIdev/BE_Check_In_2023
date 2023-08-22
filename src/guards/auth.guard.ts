@@ -33,6 +33,7 @@ export class AuthGuard implements CanActivate {
       request['user'] = {
         userId: user.id,
         role: user.role,
+        phoneNumber: user.phoneNumber,
       };
     } catch {
       throw new UnauthorizedException();

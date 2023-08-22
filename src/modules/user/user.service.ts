@@ -283,8 +283,6 @@ export class UserService {
     image: string,
   ): Promise<string | null> {
     try {
-      const user = await this.findOneById(userId);
-      image = image.replace('undefined', user.phoneNumber);
       await this.prismaService.user.update({
         where: { id: userId },
         data: { image },
