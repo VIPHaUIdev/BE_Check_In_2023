@@ -9,9 +9,10 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Res,
-  Headers,
   UploadedFile,
+  Request,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -26,7 +27,7 @@ import {
   UpdateUserResponse,
   FindOnePayload,
 } from './dto/user.dto';
-import { Admin } from 'src/decorators/auth.decorator';
+import { Admin, Auth } from 'src/decorators/auth.decorator';
 import { QueryUserDto } from './dto/query.dto';
 import { SseService } from '../../shared/services/sse.service';
 import { InjectQueue } from '@nestjs/bull';
@@ -214,10 +215,11 @@ export class UserController {
 
   @Get('/check-link')
   @SkipThrottle(false)
+  @Auth()
   @ResponseMessage('the link is still usable')
   @HttpCode(HttpStatus.OK)
-  async checkLink(@Headers('jwt') token: string): Promise<string | null> {
-    const userName = await this.userService.checkLink(token);
+  async checkLink(@Req() req: Request): Promise<string | null> {
+    const userName = await this.userService.checkLink(req['user'].userId);
     return userName;
   }
 

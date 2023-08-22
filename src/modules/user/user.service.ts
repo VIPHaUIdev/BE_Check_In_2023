@@ -21,7 +21,6 @@ import { SecretCodeIsIncorrect } from 'src/exceptions/secret-code-incorrect.exce
 import { JwtService } from '@nestjs/jwt';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { TokenHasExpired } from 'src/exceptions/token-has-expired.exception';
 
 @Injectable()
 export class UserService {
@@ -268,17 +267,10 @@ export class UserService {
   async generateToken(userId: string): Promise<string> {
     return await this.jwtService.signAsync({ userId });
   }
-  async checkLink(token: string): Promise<string | null> {
+  async checkLink(userId: string): Promise<string | null> {
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET,
-      });
-      const tokenCache = await this.cacheManager.get(payload.userId);
-      if (tokenCache === token) {
-        throw new TokenHasExpired();
-      }
       const user = await this.prismaService.user.findUnique({
-        where: { id: payload.userId },
+        where: { id: userId },
       });
 
       return user.fullName;
