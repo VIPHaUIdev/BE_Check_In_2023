@@ -12,6 +12,7 @@ import {
   Req,
   Res,
   UploadedFile,
+  Headers,
   Request,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -218,8 +219,15 @@ export class UserController {
   @Auth()
   @ResponseMessage('the link is still usable')
   @HttpCode(HttpStatus.OK)
-  async checkLink(@Req() req: Request): Promise<string | null> {
-    const userName = await this.userService.checkLink(req['user'].userId);
+  async checkLink(
+    @Req() req: Request,
+    @Headers('Authorization') authorizationHeader: string,
+  ): Promise<string | null> {
+    const token = authorizationHeader.replace('Bearer ', '');
+    const userName = await this.userService.checkLink(
+      req['user'].userId,
+      token,
+    );
     return userName;
   }
 
