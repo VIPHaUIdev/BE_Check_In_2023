@@ -34,7 +34,10 @@ import { EmailService } from '../email/email.service';
 import { GetAllJobsResponse } from '../email/dto/email.dto';
 import { QueryJobDto } from '../email/dto/query.dto';
 import { FileUpload } from 'src/decorators/file-upload.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
+import { Recaptcha } from '@nestlab/google-recaptcha';
 
+@SkipThrottle()
 @Controller({
   path: 'users',
   version: '1',
@@ -93,6 +96,8 @@ export class UserController {
   }
 
   @Post('/signup')
+  @SkipThrottle(false)
+  @Recaptcha()
   @ResponseMessage('signup successfully')
   @HttpCode(HttpStatus.OK)
   @FileUpload('image')
@@ -125,6 +130,7 @@ export class UserController {
   }
 
   @Post('/signup/admin')
+  @SkipThrottle(false)
   @ResponseMessage('sign up admin successfully')
   @HttpCode(HttpStatus.CREATED)
   async signupAdmin(
@@ -137,6 +143,7 @@ export class UserController {
   }
 
   @Get('/sse')
+  @Admin()
   async streamCheckinData(@Res() res: Response): Promise<void> {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -195,6 +202,8 @@ export class UserController {
   }
 
   @Get('/renew-qr')
+  @SkipThrottle(false)
+  @Recaptcha()
   @ResponseMessage('renew QR code successfully')
   @HttpCode(HttpStatus.OK)
   async renewQR(@Query('q') account: string): Promise<string | null> {
