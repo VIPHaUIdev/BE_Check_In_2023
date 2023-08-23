@@ -14,8 +14,6 @@ import {
   Request,
   Headers,
   UploadedFile,
-  Headers,
-  Request,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -39,6 +37,8 @@ import { EmailService } from '../email/email.service';
 import { GetAllJobsResponse } from '../email/dto/email.dto';
 import { QueryJobDto } from '../email/dto/query.dto';
 import { FileUpload } from 'src/decorators/file-upload.decorator';
+import { SkipThrottle } from '@nestjs/throttler';
+import { Recaptcha } from '@nestlab/google-recaptcha';
 
 @SkipThrottle()
 @Controller({
