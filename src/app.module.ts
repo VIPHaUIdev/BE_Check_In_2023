@@ -13,9 +13,11 @@ import { loggerIns } from './common/logger';
 import { HttpLoggerMiddleware } from './middlewares/http.logger.middleware';
 import { CustomThrottlerGuard } from './providers/custom-throttler-guard.provider';
 import { EmailModule } from './modules/email/email.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
+    CacheModule.register({ isGlobal: true }),
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST,

@@ -9,8 +9,11 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Res,
   UploadedFile,
+  Headers,
+  Request,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -25,7 +28,7 @@ import {
   UpdateUserResponse,
   FindOnePayload,
 } from './dto/user.dto';
-import { Admin } from 'src/decorators/auth.decorator';
+import { Admin, Auth } from 'src/decorators/auth.decorator';
 import { QueryUserDto } from './dto/query.dto';
 import { SseService } from '../../shared/services/sse.service';
 import { InjectQueue } from '@nestjs/bull';
@@ -209,6 +212,23 @@ export class UserController {
   async renewQR(@Query('q') account: string): Promise<string | null> {
     const user = await this.userService.findOne(account);
     return user.id;
+  }
+
+  @Get('/check-link')
+  @SkipThrottle(false)
+  @Auth()
+  @ResponseMessage('the link is still usable')
+  @HttpCode(HttpStatus.OK)
+  async checkLink(
+    @Req() req: Request,
+    @Headers('Authorization') authorizationHeader: string,
+  ): Promise<string | null> {
+    const token = authorizationHeader.replace('Bearer ', '');
+    const userName = await this.userService.checkLink(
+      req['user'].userId,
+      token,
+    );
+    return userName;
   }
 
   @Get('/:id')

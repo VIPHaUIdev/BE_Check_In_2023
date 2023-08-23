@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   UserDto,
@@ -19,6 +19,8 @@ import { SseService } from 'src/shared/services/sse.service';
 import * as ExcelJS from 'exceljs';
 import { SecretCodeIsIncorrect } from 'src/exceptions/secret-code-incorrect.exception';
 import { JwtService } from '@nestjs/jwt';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UserService {
@@ -26,6 +28,7 @@ export class UserService {
     private readonly prismaService: PrismaService,
     private sseService: SseService,
     private jwtService: JwtService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async findOne(account: string): Promise<FindOnePayload | null> {
@@ -263,5 +266,15 @@ export class UserService {
 
   async generateToken(userId: string): Promise<string> {
     return await this.jwtService.signAsync({ userId });
+  }
+  async checkLink(userId: string, token: string): Promise<string | null> {
+    if ((await this.cacheManager.get(userId)) === token) {
+      throw new UnauthorizedException();
+    }
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    return user.fullName;
   }
 }
