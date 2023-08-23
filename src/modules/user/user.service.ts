@@ -1,4 +1,4 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   UserDto,
@@ -276,5 +276,16 @@ export class UserService {
     });
 
     return user.fullName;
+  }
+  async updateImage(
+    userId: string,
+    token: string,
+    image: string,
+  ): Promise<void> {
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { image },
+    });
+    await this.cacheManager.set(userId, token, 3600);
   }
 }

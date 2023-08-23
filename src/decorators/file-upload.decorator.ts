@@ -14,7 +14,8 @@ export function FileUpload(fieldName: string) {
           filename: (req, file, cb) => {
             const uniqueSuffix = crypto.randomBytes(20).toString('hex');
             const ext = path.extname(file.originalname);
-            cb(null, `${req.body.phoneNumber}_${uniqueSuffix}${ext}`);
+            const phoneNumber = req.body.phoneNumber || req['user'].phoneNumber;
+            cb(null, `${phoneNumber}_${uniqueSuffix}${ext}`);
           },
         }),
         fileFilter: (req, file, cb) => {

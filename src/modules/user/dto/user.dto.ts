@@ -43,6 +43,7 @@ export class FindOnePayload {
   id: string;
   role: string;
   fullName: string;
+  phoneNumber: string;
   password: string;
   generation: number;
   isCheckin: boolean;

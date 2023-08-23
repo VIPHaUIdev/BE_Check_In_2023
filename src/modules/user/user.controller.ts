@@ -11,6 +11,8 @@ import {
   Query,
   Req,
   Res,
+  Request,
+  Headers,
   UploadedFile,
   Headers,
   Request,
@@ -37,8 +39,6 @@ import { EmailService } from '../email/email.service';
 import { GetAllJobsResponse } from '../email/dto/email.dto';
 import { QueryJobDto } from '../email/dto/query.dto';
 import { FileUpload } from 'src/decorators/file-upload.decorator';
-import { SkipThrottle } from '@nestjs/throttler';
-import { Recaptcha } from '@nestlab/google-recaptcha';
 
 @SkipThrottle()
 @Controller({
@@ -79,22 +79,6 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   async checkIn(@Param('id') id: string): Promise<CheckinUserResponse> {
     const updatedUser = await this.userService.checkin(id);
-    return updatedUser;
-  }
-
-  @Patch('/:id')
-  @Admin()
-  @ResponseMessage('update user successfully')
-  @HttpCode(HttpStatus.OK)
-  @FileUpload('image')
-  async updateUser(
-    @Param('id') id: string,
-    @Body() data: UpdateUserDto,
-    @UploadedFile() image: Express.Multer.File,
-  ): Promise<UpdateUserResponse> {
-    data.image = image ? image.filename : null;
-    const updatedUser = await this.userService.updateUser(id, data);
-
     return updatedUser;
   }
 
@@ -229,6 +213,39 @@ export class UserController {
       token,
     );
     return userName;
+  }
+  @Patch('/update-image')
+  @Auth()
+  @FileUpload('image')
+  @ResponseMessage('update image successfully')
+  @HttpCode(HttpStatus.OK)
+  async updateImage(
+    @Req() req: Request,
+    @Headers('Authorization') authorizationHeader: string,
+    @UploadedFile() image: Express.Multer.File,
+  ): Promise<void> {
+    const token = authorizationHeader.replace('Bearer ', '');
+    await this.userService.updateImage(
+      req['user'].userId,
+      token,
+      image?.filename,
+    );
+  }
+
+  @Patch('/:id')
+  @Admin()
+  @ResponseMessage('update user successfully')
+  @HttpCode(HttpStatus.OK)
+  @FileUpload('image')
+  async updateUser(
+    @Param('id') id: string,
+    @Body() data: UpdateUserDto,
+    @UploadedFile() image: Express.Multer.File,
+  ): Promise<UpdateUserResponse> {
+    data.image = image ? image.filename : null;
+    const updatedUser = await this.userService.updateUser(id, data);
+
+    return updatedUser;
   }
 
   @Get('/:id')
