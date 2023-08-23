@@ -223,14 +223,13 @@ export class UserController {
     @Req() req: Request,
     @Headers('Authorization') authorizationHeader: string,
     @UploadedFile() image: Express.Multer.File,
-  ): Promise<string | null> {
+  ): Promise<void> {
     const token = authorizationHeader.replace('Bearer ', '');
-    const messgae = await this.userService.updateImage(
+    await this.userService.updateImage(
       req['user'].userId,
       token,
       image?.filename,
     );
-    return messgae;
   }
 
   @Patch('/:id')

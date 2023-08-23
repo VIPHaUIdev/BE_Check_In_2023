@@ -281,12 +281,11 @@ export class UserService {
     userId: string,
     token: string,
     image: string,
-  ): Promise<string | null> {
+  ): Promise<void> {
     await this.prismaService.user.update({
       where: { id: userId },
       data: { image },
     });
     await this.cacheManager.set(userId, token, 3600);
-    return 'Update image successfully';
   }
 }
