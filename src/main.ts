@@ -14,6 +14,7 @@ import { loggerIns } from './common/logger';
 import { ErrorsInterceptor } from './interceptors/errors.interceptor';
 import * as schedule from 'node-schedule';
 import { backupDB } from './common/backupDB';
+import { GoogleRecaptchaFilter } from './filters/recaptcha.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -31,6 +32,7 @@ async function bootstrap() {
   app.useGlobalFilters(
     new HttpExceptionFilter(reflector),
     new PrismaClientExceptionFilter(reflector),
+    new GoogleRecaptchaFilter(),
   );
 
   app.useGlobalInterceptors(
