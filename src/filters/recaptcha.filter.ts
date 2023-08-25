@@ -1,4 +1,9 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpStatus,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { GoogleRecaptchaException } from '@nestlab/google-recaptcha';
 
@@ -6,10 +11,10 @@ import { GoogleRecaptchaException } from '@nestlab/google-recaptcha';
 export class GoogleRecaptchaFilter implements ExceptionFilter {
   catch(exception: GoogleRecaptchaException, host: ArgumentsHost): any {
     const res: Response = host.switchToHttp().getResponse();
-
-    res.status(exception.getStatus()).send({
-      type: 'GoogleRecaptchaError',
-      message: 'reCAPTCHA validation failed',
+    const statusCode = HttpStatus.BAD_REQUEST;
+    res.status(statusCode).json({
+      statusCode,
+      error: 'reCAPTCHA validation failed',
     });
   }
 }
