@@ -17,6 +17,7 @@ export class UserDto {
   phoneNumber: string;
   isCheckin?: boolean;
   password?: string;
+  facebook: string;
 }
 
 export class InfoUserDto {
@@ -34,6 +35,10 @@ export class InfoUserDto {
   @IsEmail()
   email: string;
 
+  @IsNotEmpty()
+  @IsString()
+  facebook: string;
+
   @IsOptional()
   @IsString()
   image?: string;
@@ -47,6 +52,7 @@ export class FindOnePayload {
   password: string;
   generation: number;
   isCheckin: boolean;
+  facebook: string;
 }
 export class CreateUserDto extends InfoUserDto {
   @IsNotEmpty()
@@ -62,6 +68,7 @@ export class GetAllUsers {
   role: string;
   createdAt: Date;
   isCheckin: boolean;
+  facebook: string;
 }
 
 export class findAllUsersResponse {
@@ -96,6 +103,11 @@ export class UpdateUserDto {
   email: string;
 
   @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  facebook: string;
+
+  @IsOptional()
   @IsEnum(Role)
   role: Role;
 
@@ -115,4 +127,5 @@ export class UpdateUserResponse {
   email: string;
   role: Role;
   isCheckin: boolean;
+  facebook: string;
 }

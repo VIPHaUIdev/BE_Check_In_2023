@@ -44,6 +44,7 @@ export class UserService {
         role: true,
         password: true,
         isCheckin: true,
+        facebook: true,
       },
     });
 
@@ -104,6 +105,7 @@ export class UserService {
             role: true,
             createdAt: true,
             isCheckin: true,
+            facebook: true,
           },
         }),
         this.prismaService.user.count({
@@ -128,6 +130,7 @@ export class UserService {
         role: true,
         password: true,
         isCheckin: true,
+        facebook: true,
       },
     });
 
@@ -187,6 +190,7 @@ export class UserService {
         role: true,
         createdAt: true,
         isCheckin: true,
+        facebook: true,
       },
     });
 
