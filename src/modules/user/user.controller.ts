@@ -84,7 +84,7 @@ export class UserController {
 
   @Post('/signup')
   @SkipThrottle(false)
-  // @Recaptcha()
+  @Recaptcha()
   @ResponseMessage('signup successfully')
   @HttpCode(HttpStatus.OK)
   @FileUpload('image')
