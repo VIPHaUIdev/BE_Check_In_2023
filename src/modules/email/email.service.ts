@@ -17,7 +17,9 @@ export class EmailService {
       'utf-8',
     );
     const template = hbs.compile(hbsFileContent);
+    const splitName = data.fullName.split(' ');
     const html = template({
+      name: splitName[splitName.length - 1],
       fullName: data.fullName,
       phoneNumber: data.phoneNumber,
       userId: data.userId,
@@ -33,7 +35,7 @@ export class EmailService {
       from: 'V.I.P English Club <clbtienganhvip@gmail.com>',
       to: data.email,
       subject:
-        '[V.I.P English Club] Xác nhận đăng ký sự kiện sinh nhật thành công',
+        '[V.I.P 12TH BIRTHDAY PARTY] XÁC NHẬN ĐĂNG KÝ THÀNH CÔNG SỰ KIỆN',
       html,
     };
 
