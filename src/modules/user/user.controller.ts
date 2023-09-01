@@ -232,6 +232,15 @@ export class UserController {
     );
   }
 
+  @Post('/browse-image')
+  @Admin()
+  @ResponseMessage('Browse user image successfully')
+  @HttpCode(HttpStatus.OK)
+  async browseImage(@Query('q') id: string): Promise<null> {
+    await this.userService.browseImage(id);
+    return null;
+  }
+
   @Patch('/:id')
   @Admin()
   @ResponseMessage('update user successfully')

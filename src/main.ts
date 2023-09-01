@@ -15,9 +15,11 @@ import { ErrorsInterceptor } from './interceptors/errors.interceptor';
 import * as schedule from 'node-schedule';
 import { backupDB } from './common/backupDB';
 import { GoogleRecaptchaFilter } from './filters/recaptcha.filter';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: WinstonModule.createLogger(loggerIns),
     cors: true,
   });
@@ -52,6 +54,8 @@ async function bootstrap() {
   schedule.scheduleJob('0 * * * *', () => {
     backupDB();
   });
+
+  app.useStaticAssets(join(__dirname, '..', 'uploads'));
 
   await app.listen(3000);
 }
