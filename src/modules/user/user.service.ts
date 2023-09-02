@@ -39,12 +39,14 @@ export class UserService {
       select: {
         id: true,
         fullName: true,
+        email: true,
         generation: true,
         phoneNumber: true,
         role: true,
         password: true,
         isCheckin: true,
         facebook: true,
+        image: true,
       },
     });
 
@@ -106,6 +108,8 @@ export class UserService {
             createdAt: true,
             isCheckin: true,
             facebook: true,
+            image: true,
+            isAccessImage: true,
           },
         }),
         this.prismaService.user.count({
@@ -125,12 +129,14 @@ export class UserService {
       select: {
         id: true,
         fullName: true,
+        email: true,
         generation: true,
         phoneNumber: true,
         role: true,
         password: true,
         isCheckin: true,
         facebook: true,
+        image: true,
       },
     });
 
