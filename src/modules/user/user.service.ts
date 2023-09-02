@@ -14,14 +14,14 @@ import { UserNotFoundException } from '../../exceptions/user-not-found.exception
 import { type Prisma } from '@prisma/client';
 import { generateHash } from 'src/common/utils';
 import { QueryUserDto } from './dto/query.dto';
-import { UserAlreadyCheckedInException } from 'src/exceptions/user-already-checkdin.exception';
 import { SseService } from 'src/shared/services/sse.service';
 import * as ExcelJS from 'exceljs';
-import { SecretCodeIsIncorrect } from 'src/exceptions/secret-code-incorrect.exception';
+import { NotFoundException } from 'src/exceptions/not-found.exception';
 import { JwtService } from '@nestjs/jwt';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-
+import axios from 'axios';
+import * as FormData from 'form-data';
 @Injectable()
 export class UserService {
   constructor(
@@ -149,11 +149,6 @@ export class UserService {
       type === 'email-phone'
         ? await this.findOne(account)
         : await this.findOneById(account);
-
-    if (user.isCheckin) {
-      throw new UserAlreadyCheckedInException();
-    }
-
     const updatedUser = await this.prismaService.user.update({
       where: { id: user.id },
       data: { isCheckin: true },
@@ -208,7 +203,7 @@ export class UserService {
     code: string,
   ): Promise<UserDto> {
     if (code !== process.env.API_ADMIN_SECRET) {
-      throw new SecretCodeIsIncorrect();
+      throw new NotFoundException();
     }
     return await this.prismaService.user.create({
       data: {
@@ -291,5 +286,17 @@ export class UserService {
       data: { image },
     });
     await this.cacheManager.set(userId, token, 3600);
+  }
+
+  async checkinByFace(image: Buffer): Promise<CheckinUserResponse> {
+    try {
+      const formData = new FormData();
+      formData.append('img', image, 'face.png');
+      const res = await axios.post(process.env.API_CHECKIN_FACE, formData);
+      const updatedUser = await this.checkin(res.data.phone, 'email-phone');
+      return updatedUser;
+    } catch (err) {
+      throw new NotFoundException();
+    }
   }
 }
