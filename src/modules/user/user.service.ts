@@ -290,6 +290,6 @@ export class UserService {
       where: { id: userId },
       data: { image },
     });
-    await this.cacheManager.set(userId, token, 3600);
+    await this.cacheManager.set(userId, token);
   }
 }
