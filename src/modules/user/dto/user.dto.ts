@@ -55,7 +55,8 @@ export class FindOnePayload {
   facebook: string;
 }
 export class CreateUserDto extends InfoUserDto {
-  @IsNotEmpty()
+  @IsString()
+  @IsOptional()
   password: string;
 }
 

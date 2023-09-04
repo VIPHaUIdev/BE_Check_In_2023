@@ -271,15 +271,23 @@ export class UserService {
   async generateToken(userId: string): Promise<string> {
     return await this.jwtService.signAsync({ userId });
   }
-  async checkLink(userId: string, token: string): Promise<string | null> {
-    if ((await this.cacheManager.get(userId)) === token) {
-      throw new UnauthorizedException();
+  async checkLink(
+    userId: string,
+    token: string,
+    answer?: boolean,
+  ): Promise<object | null> {
+    if (answer === undefined || answer === true) {
+      if ((await this.cacheManager.get(userId)) === token) {
+        throw new UnauthorizedException();
+      }
+      const user = await this.prismaService.user.findUnique({
+        where: { id: userId },
+        select: { fullName: true },
+      });
+      return user;
     }
-    const user = await this.prismaService.user.findUnique({
-      where: { id: userId },
-    });
-
-    return user.fullName;
+    await this.cacheManager.set(userId, token);
+    return null;
   }
   async updateImage(
     userId: string,

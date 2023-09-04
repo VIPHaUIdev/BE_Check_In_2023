@@ -5,7 +5,6 @@ import { Observable, Subject, Subscription } from 'rxjs';
 export class SseService {
   private readonly sseSubject = new Subject<string>();
   private sseSubscription: Subscription;
-  private updatedUserId: string = '';
 
   send(data: string): void {
     this.sseSubject.next(data);
