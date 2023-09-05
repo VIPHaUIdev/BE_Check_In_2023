@@ -24,7 +24,7 @@ import axios from 'axios';
 import * as FormData from 'form-data';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { BrowseImageIsInValid } from 'src/exceptions/browse-image-invalid.exception';
+import { ImageIsInvalid } from 'src/exceptions/image-invalid.exception';
 
 @Injectable()
 export class UserService {
@@ -321,9 +321,9 @@ export class UserService {
     formData.append('name', user.fullName);
     formData.append('img', fs.createReadStream(imagePath));
 
-    const response = await axios.post(process.env.API_BROWSE_IMAGE, formData);
+    const response = await axios.post(process.env.API_AI, formData);
     if (response.data.valid !== true) {
-      throw new BrowseImageIsInValid();
+      throw new ImageIsInvalid();
     }
     await this.prismaService.user.update({
       where: { id },
