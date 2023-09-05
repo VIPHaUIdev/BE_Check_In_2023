@@ -48,11 +48,13 @@ export class FindOnePayload {
   id: string;
   role: string;
   fullName: string;
+  email: string;
   phoneNumber: string;
   password: string;
   generation: number;
   isCheckin: boolean;
   facebook: string;
+  image: string;
 }
 export class CreateUserDto extends InfoUserDto {
   @IsNotEmpty()
@@ -69,6 +71,8 @@ export class GetAllUsers {
   createdAt: Date;
   isCheckin: boolean;
   facebook: string;
+  image: string;
+  isAccessImage: boolean;
 }
 
 export class findAllUsersResponse {
