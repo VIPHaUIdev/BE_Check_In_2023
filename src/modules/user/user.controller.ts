@@ -14,6 +14,7 @@ import {
   Request,
   Headers,
   UploadedFile,
+  Delete,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
@@ -279,5 +280,13 @@ export class UserController {
     const user = await this.userService.findOneById(id);
     delete user.password;
     return user;
+  }
+
+  @Delete('/:id')
+  @Admin()
+  @ResponseMessage('delete user successfully')
+  @HttpCode(HttpStatus.OK)
+  async deleteOne(@Param('id') id: string): Promise<void> {
+    await this.userService.deleteOne(id);
   }
 }
