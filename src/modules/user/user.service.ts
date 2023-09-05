@@ -24,7 +24,6 @@ import axios from 'axios';
 import * as FormData from 'form-data';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import * as FormData from 'form-data';
 import { BrowseImageIsInValid } from 'src/exceptions/browse-image-invalid.exception';
 
 @Injectable()
