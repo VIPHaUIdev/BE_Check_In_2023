@@ -193,9 +193,9 @@ export class UserController {
   @Recaptcha()
   @ResponseMessage('renew QR code successfully')
   @HttpCode(HttpStatus.OK)
-  async renewQR(@Query('q') account: string): Promise<string | null> {
+  async renewQR(@Query('q') account: string): Promise<object | null> {
     const user = await this.userService.findOne(account);
-    return user.id;
+    return { id: user.id };
   }
 
   @Get('/check-link')
