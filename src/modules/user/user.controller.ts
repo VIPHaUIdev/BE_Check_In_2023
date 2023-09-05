@@ -206,11 +206,13 @@ export class UserController {
   async checkLink(
     @Req() req: Request,
     @Headers('Authorization') authorizationHeader: string,
-  ): Promise<string | null> {
+    @Query('answer') answer: boolean,
+  ): Promise<object | null> {
     const token = authorizationHeader.replace('Bearer ', '');
     const userName = await this.userService.checkLink(
       req['user'].userId,
       token,
+      answer,
     );
     return userName;
   }
