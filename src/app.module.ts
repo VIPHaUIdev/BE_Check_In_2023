@@ -17,7 +17,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
-    CacheModule.register({ isGlobal: true }),
+    CacheModule.register({ isGlobal: true, ttl: 0 }),
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST,

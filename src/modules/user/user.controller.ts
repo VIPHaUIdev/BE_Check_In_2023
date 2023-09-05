@@ -183,9 +183,9 @@ export class UserController {
   @Admin()
   @ResponseMessage('generate link successfully')
   @HttpCode(HttpStatus.OK)
-  async generateLink(@Query('q') userId: string): Promise<string> {
+  async generateLink(@Query('q') userId: string): Promise<object> {
     const token = await this.userService.generateToken(userId);
-    return token;
+    return { token };
   }
 
   @Get('/renew-qr')
