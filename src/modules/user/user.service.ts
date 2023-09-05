@@ -22,6 +22,10 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import axios from 'axios';
 import * as FormData from 'form-data';
+import * as fs from 'fs-extra';
+import { join } from 'path';
+import { ImageIsInvalid } from 'src/exceptions/image-invalid.exception';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -304,5 +308,26 @@ export class UserService {
     } catch (err) {
       throw new NotFoundException();
     }
+  }
+  async browseImage(id: string): Promise<void> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+      select: { image: true, phoneNumber: true, fullName: true },
+    });
+
+    const imagePath = join(__dirname, '../../..', `uploads/${user.image}`);
+    const formData = new FormData();
+    formData.append('phone', user.phoneNumber);
+    formData.append('name', user.fullName);
+    formData.append('img', fs.createReadStream(imagePath));
+
+    const response = await axios.post(process.env.API_AI, formData);
+    if (response.data.valid !== true) {
+      throw new ImageIsInvalid();
+    }
+    await this.prismaService.user.update({
+      where: { id },
+      data: { isAccessImage: true },
+    });
   }
 }
