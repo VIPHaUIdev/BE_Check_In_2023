@@ -248,6 +248,18 @@ export class UserController {
     return updatedUser;
   }
 
+  @Post('/checkin-face')
+  @Admin()
+  @FileUpload('image', 'checkin-face')
+  @ResponseMessage('check in by face successfully')
+  @HttpCode(HttpStatus.OK)
+  async checkinByFace(
+    @UploadedFile() image: Express.Multer.File,
+  ): Promise<CheckinUserResponse> {
+    const updatedUser = await this.userService.checkinByFace(image.buffer);
+    return updatedUser;
+  }
+
   @Get('/:id')
   @Admin()
   @ResponseMessage('success')

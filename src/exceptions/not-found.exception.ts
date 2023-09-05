@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class SecretCodeIsIncorrect extends HttpException {
+export class NotFoundException extends HttpException {
   constructor() {
     super('Not Found', HttpStatus.NOT_FOUND);
   }

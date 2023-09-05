@@ -1,11 +1,20 @@
 import { applyDecorators, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { diskStorage, memoryStorage } from 'multer';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import { FileUploadIsInvalid } from 'src/exceptions/file-upload-invalid.exception';
 
-export function FileUpload(fieldName: string) {
+export function FileUpload(fieldName: string, type?: string) {
+  if (type === 'checkin-face') {
+    return applyDecorators(
+      UseInterceptors(
+        FileInterceptor(fieldName, {
+          storage: memoryStorage(),
+        }),
+      ),
+    );
+  }
   return applyDecorators(
     UseInterceptors(
       FileInterceptor(fieldName, {
