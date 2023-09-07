@@ -338,4 +338,11 @@ export class UserService {
       data: { isAccessImage: true },
     });
   }
+
+  async deleteOne(id: string): Promise<void> {
+    const user = await this.prismaService.user.findUnique({ where: { id } });
+    if (!user) throw new UserNotFoundException();
+    await this.prismaService.email.delete({ where: { userId: id } });
+    await this.prismaService.user.delete({ where: { id } });
+  }
 }
