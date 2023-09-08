@@ -3,36 +3,45 @@ version: '3'
 services:
   mysql:
     image: mysql:8
-    container_name: db_checkin
+    container_name: mysql_checkin
     environment:
       MYSQL_DATABASE: "vip"
       MYSQL_ROOT_PASSWORD: "vip"
+    networks:
+      - checkin-network
     ports:
-      - 3305:3306
+      - 3306:3306
     restart: always
     volumes:
       - mysql:/var/lib/mysql
 
   redis:
-    image: redis:latest
-    container_name: my-redis
+    image: redis:7
+    container_name: redis_checkin
+    networks:
+      - checkin-network
     ports:
-      - "6379:6379"
+      - 6379:6379
     volumes:
       - redis_data:/data
+    command: redis-server --requirepass !CnJbIcJqew
 
-  app:
+  nodejs:
     build: .
-    container_name: my-app
+    container_name: nodejs_checkin
+    networks:
+      - checkin-network
     ports:
-      - "3000:3000"
+      - 3000:3000
     depends_on:
       - redis
       - mysql
-    environment:
-      - REDIS_HOST=redis
-      - MYSQL_HOST=mysql
+    command: npm run start:prod
 
 volumes:
   mysql:
   redis_data:
+
+networks:
+  checkin-network:
+    driver: bridge
