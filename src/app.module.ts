@@ -22,7 +22,7 @@ import { CacheModule } from '@nestjs/cache-manager';
       redis: {
         host: process.env.REDIS_HOST,
         port: +process.env.REDIS_PORT,
-        password: process.env.REDIS_PASSWORD
+        password: process.env.REDIS_PASSWORD,
       },
     }),
     ConfigModule.forRoot({
