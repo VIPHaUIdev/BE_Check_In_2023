@@ -36,11 +36,14 @@ services:
     depends_on:
       - redis
       - mysql
+    volumes:
+      - images:/app/uploads
     command: npm run start:prod
 
 volumes:
   mysql:
   redis_data:
+  images:
 
 networks:
   checkin-network:
