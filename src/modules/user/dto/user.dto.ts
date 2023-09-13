@@ -133,4 +133,5 @@ export class UpdateUserResponse {
   role: Role;
   isCheckin: boolean;
   facebook: string;
+  image: string;
 }

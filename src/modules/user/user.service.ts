@@ -196,6 +196,7 @@ export class UserService {
         createdAt: true,
         isCheckin: true,
         facebook: true,
+        image: true,
       },
     });
 
