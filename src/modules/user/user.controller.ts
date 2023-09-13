@@ -254,7 +254,7 @@ export class UserController {
     @Body() data: UpdateUserDto,
     @UploadedFile() image: Express.Multer.File,
   ): Promise<UpdateUserResponse> {
-    data.image = image ? image.filename : null;
+    if (image) data.image = image.filename;
     const updatedUser = await this.userService.updateUser(id, data);
 
     return updatedUser;
