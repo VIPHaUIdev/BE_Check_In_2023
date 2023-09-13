@@ -35,7 +35,7 @@ export function backupDB(): void {
   const backupFileName = `${timestamp}.sql`;
 
   exec(
-    `docker exec db_checkin /usr/bin/mysqldump -u ${username} --password=${password} ${database} > backups/${backupFileName}`,
+    `docker exec mysql_checkin /usr/bin/mysqldump -u ${username} --password=${password} ${database} > backups/${backupFileName}`,
     (error, stdout, stderr) => {
       if (error) {
         loggerIns.error(error.message, { label: 'backupDB' });
@@ -53,7 +53,7 @@ function restoreDB(fileName: string): void {
       process.env.DATABASE_URL,
     );
     exec(
-      `cat backups/${fileName} | docker exec -i db_checkin /usr/bin/mysql -u ${username} --password=${password} ${database}`,
+      `cat backups/${fileName} | docker exec -i mysql_checkin /usr/bin/mysql -u ${username} --password=${password} ${database}`,
 
       (error, stdout, stderr) => {
         if (error) {
