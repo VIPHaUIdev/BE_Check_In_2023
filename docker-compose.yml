@@ -38,12 +38,14 @@ services:
       - mysql
     volumes:
       - images:/app/uploads
+      - logs:/app/logs
     command: npm run start:prod
 
 volumes:
   mysql:
   redis_data:
   images:
+  logs:
 
 networks:
   checkin-network:
