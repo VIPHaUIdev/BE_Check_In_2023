@@ -11,19 +11,45 @@ import { QueryJobDto } from './dto/query.dto';
 export class EmailService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async send(data: EmailJobDto): Promise<void> {
-    const hbsFileContent = await fs.readFile(
-      `${__dirname}/templates/sendQR.hbs`,
-      'utf-8',
-    );
-    const template = hbs.compile(hbsFileContent);
-    const splitName = data.fullName.split(' ');
-    const html = template({
-      name: splitName[splitName.length - 1],
-      fullName: data.fullName,
-      phoneNumber: data.phoneNumber,
-      userId: data.userId,
-    });
+  async send(data: EmailJobDto, type?: string): Promise<void> {
+    let mailOptions: object;
+    if (type === 'confirm') {
+      const hbsFileContent = await fs.readFile(
+        `${__dirname}/templates/browsedImage.hbs`,
+        'utf-8',
+      );
+      const template = hbs.compile(hbsFileContent);
+      const html = template({
+        fullName: data.fullName,
+      });
+      mailOptions = {
+        from: 'V.I.P English Club <clbtienganhvip@gmail.com>',
+        to: data.email,
+        subject:
+          '[V.I.P 12TH BIRTHDAY PARTY] XÁC NHẬN ĐĂNG KÝ CHECK-IN KHUÔN MẶT THÀNH CÔNG',
+        html,
+      };
+    } else {
+      const hbsFileContent = await fs.readFile(
+        `${__dirname}/templates/sendQR.hbs`,
+        'utf-8',
+      );
+      const template = hbs.compile(hbsFileContent);
+      const splitName = data.fullName.split(' ');
+      const html = template({
+        name: splitName[splitName.length - 1],
+        fullName: data.fullName,
+        phoneNumber: data.phoneNumber,
+        userId: data.userId,
+      });
+      mailOptions = {
+        from: 'V.I.P English Club <clbtienganhvip@gmail.com>',
+        to: data.email,
+        subject:
+          '[V.I.P 12TH BIRTHDAY PARTY] XÁC NHẬN ĐĂNG KÝ THÀNH CÔNG SỰ KIỆN',
+        html,
+      };
+    }
     const transport = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       auth: {
@@ -31,13 +57,6 @@ export class EmailService {
         pass: process.env.EMAIL_PASS,
       },
     });
-    const mailOptions = {
-      from: 'V.I.P English Club <clbtienganhvip@gmail.com>',
-      to: data.email,
-      subject:
-        '[V.I.P 12TH BIRTHDAY PARTY] XÁC NHẬN ĐĂNG KÝ THÀNH CÔNG SỰ KIỆN',
-      html,
-    };
 
     await transport.sendMail(mailOptions);
   }

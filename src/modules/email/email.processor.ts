@@ -29,4 +29,17 @@ export class EmailProcessor {
       this.logger.error(err.stack, { label: 'sendJob' });
     }
   }
+
+  @Process('sendEmailConfirm')
+  async sendConfirmJob(job: Job<EmailJobDto>): Promise<void> {
+    try {
+      const data = { ...job.data };
+      await this.emailService.send(data, 'confirm');
+      this.logger.info(`Send email to ${data.email}`, {
+        label: 'sendConfirmJob',
+      });
+    } catch (err) {
+      this.logger.error(err.stack, { label: 'sendConfirmJob' });
+    }
+  }
 }

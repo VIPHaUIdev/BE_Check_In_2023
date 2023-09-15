@@ -318,7 +318,7 @@ export class UserService {
       throw new NotFoundException();
     }
   }
-  async browseImage(id: string): Promise<void> {
+  async browseImage(id: string): Promise<UserDto> {
     const user = await this.prismaService.user.findUnique({
       where: { id },
       select: { image: true, phoneNumber: true, fullName: true },
@@ -334,7 +334,7 @@ export class UserService {
     if (response.data.valid !== true) {
       throw new ImageIsInvalid();
     }
-    await this.prismaService.user.update({
+    return await this.prismaService.user.update({
       where: { id },
       data: { isAccessImage: true },
     });
