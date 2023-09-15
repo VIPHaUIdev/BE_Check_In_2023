@@ -2,9 +2,9 @@ import { Status } from '@prisma/client';
 
 export class EmailJobDto {
   email: string;
-  userId: string;
+  userId?: string;
   fullName: string;
-  phoneNumber: string;
+  phoneNumber?: string;
 }
 
 export class GetAllJobs {
