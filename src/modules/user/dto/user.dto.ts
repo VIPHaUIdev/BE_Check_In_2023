@@ -1,4 +1,5 @@
 import { Role } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsEmail,
@@ -116,8 +117,9 @@ export class UpdateUserDto {
   @IsEnum(Role)
   role: Role;
 
-  @IsBoolean()
   @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
   isCheckin: boolean;
 
   @IsOptional()
