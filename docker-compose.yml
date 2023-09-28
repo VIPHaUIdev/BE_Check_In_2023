@@ -37,8 +37,8 @@ services:
       - redis
       - mysql
     volumes:
-      - images:/app/uploads
-      - logs:/app/logs
+      - images:/uploads
+      - logs:/logs
     command: npm run start:prod
 
 volumes:
