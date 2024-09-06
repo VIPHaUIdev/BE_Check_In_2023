@@ -19,6 +19,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 
 async function bootstrap() {
+  
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: WinstonModule.createLogger(loggerIns),
     cors: true,
@@ -54,10 +55,11 @@ async function bootstrap() {
   schedule.scheduleJob('0 * * * *', () => {
     backupDB();
   });
-
+  
   app.useStaticAssets(join(__dirname, '..', 'uploads'));
-
-  await app.listen(3000);
+  console.log('Application is starting...');
+  await app.listen(8081);
+  console.log('Application is running on: ' + await app.getUrl());
 }
 
 bootstrap();

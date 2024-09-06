@@ -42,6 +42,15 @@ model Email {
   @@map("emails")
 }
 
+model Counter {
+  id              Int    @id @default(autoincrement())
+  accessHomePage  Int    @default(0) 
+  accessSignUpPage Int   @default(0) 
+
+  @@map("countAccess")
+}
+
+
 enum Role {
   USER
   ADMIN
@@ -52,3 +61,5 @@ enum Status {
   SUCCESS
   ERROR
 }
+
+

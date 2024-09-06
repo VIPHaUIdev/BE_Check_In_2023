@@ -40,20 +40,22 @@ import { QueryJobDto } from '../email/dto/query.dto';
 import { FileUpload } from 'src/decorators/file-upload.decorator';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Recaptcha } from '@nestlab/google-recaptcha';
+import { CountService } from '../count/count.service';
 
 @SkipThrottle()
-@Controller({
-  path: 'users',
-  version: '1',
-})
+@Controller('users')
 export class UserController {
   constructor(
     private userService: UserService,
     private sseService: SseService,
     private emailService: EmailService,
-    @InjectQueue('email') private readonly emailQueue: Queue,
+    @InjectQueue('email') private readonly emailQueue: Queue,private readonly countService: CountService
   ) {}
-
+  @Get('/')
+  getHomeUser():string{
+    console.log('Accessing /users/');
+    return 'Welcome to Home User Controller!';
+  }
   @Get()
   @Admin()
   @ResponseMessage('get all users successfully')
@@ -64,8 +66,8 @@ export class UserController {
   }
 
   @Patch('/checkin')
-  @Admin()
-  @ResponseMessage('checkin by email or phone successfully')
+  @Admin()  
+  @ResponseMessage('checkin by email or p hone successfully')
   @HttpCode(HttpStatus.OK)
   async checkInByEmailPhone(
     @Query('q') account: string,
@@ -83,9 +85,20 @@ export class UserController {
     return updatedUser;
   }
 
+  // @Get('/signup')
+  // renderSignUpPage(){
+  //   console.log('Render signup page route called');
+  //   this.countService.incrementSignUpCount();
+  // }
+
+  @Get('signup')
+  async incrementAccessSignUpPage(): Promise<void>{
+    await this.userService.incrementAccessSignUpPage();
+  }
+
   @Post('/signup')
   @SkipThrottle(false)
-  @Recaptcha()
+  // @Recaptcha()
   @ResponseMessage('signup successfully')
   @HttpCode(HttpStatus.OK)
   @FileUpload('image')
@@ -98,8 +111,8 @@ export class UserController {
     delete user.password;
 
     await this.emailQueue.add('sendEmail', {
-      email: user.email,
-      userId: user.id,
+        email: user.email,
+        userId: user.id,
       fullName: user.fullName,
       phoneNumber: user.phoneNumber,
     });
@@ -179,7 +192,7 @@ export class UserController {
     const data = await this.emailService.getJobs(query);
     return data;
   }
-
+  
   @Get('/generate-link')
   @Admin()
   @ResponseMessage('generate link successfully')
@@ -191,7 +204,7 @@ export class UserController {
 
   @Get('/renew-qr')
   @SkipThrottle(false)
-  @Recaptcha()
+  // @Recaptcha()
   @ResponseMessage('renew QR code successfully')
   @HttpCode(HttpStatus.OK)
   async renewQR(@Query('q') account: string): Promise<object | null> {

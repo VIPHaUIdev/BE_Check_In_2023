@@ -10,7 +10,7 @@ import { Recaptcha } from '@nestlab/google-recaptcha';
   version: '1',
 })
 @SkipThrottle(false)
-@Recaptcha()
+// @Recaptcha()
 export class AuthController {
   constructor(private authService: AuthService) {}
 

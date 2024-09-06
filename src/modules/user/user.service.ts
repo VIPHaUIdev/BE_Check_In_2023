@@ -1,5 +1,6 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Exception } from 'handlebars';
 import {
   UserDto,
   GetAllUsers,
@@ -345,5 +346,19 @@ export class UserService {
     if (!user) throw new UserNotFoundException();
     await this.prismaService.email.delete({ where: { userId: id } });
     await this.prismaService.user.delete({ where: { id } });
+  }
+
+  async incrementAccessSignUpPage() : Promise<void>{
+    const counter = await this.prismaService.counter.findUnique({
+      where: {id: 1}
+    })
+    if(!counter){
+      throw new Exception("Counter not found!");
+    }
+    const newValue = counter.accessSignUpPage + 1;
+    await this.prismaService.counter.update({
+      where: { id: 1 },
+      data: { accessSignUpPage: newValue },
+    });
   }
 }
