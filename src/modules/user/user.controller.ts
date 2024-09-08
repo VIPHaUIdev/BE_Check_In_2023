@@ -51,11 +51,6 @@ export class UserController {
     private emailService: EmailService,
     @InjectQueue('email') private readonly emailQueue: Queue,private readonly countService: CountService
   ) {}
-  @Get('/')
-  getHomeUser():string{
-    console.log('Accessing /users/');
-    return 'Welcome to Home User Controller!';
-  }
   @Get()
   @Admin()
   @ResponseMessage('get all users successfully')
@@ -91,7 +86,7 @@ export class UserController {
   //   this.countService.incrementSignUpCount();
   // }
 
-  @Get('signup')
+  @Get('/signup')
   async incrementAccessSignUpPage(): Promise<void>{
     await this.userService.incrementAccessSignUpPage();
   }
