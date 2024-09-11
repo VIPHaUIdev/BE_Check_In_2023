@@ -6,7 +6,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { BullModule } from '@nestjs/bull';
 import { EmailService } from '../email/email.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CountModule } from '../count/count.module';
 
 @Module({
   imports: [
@@ -24,7 +23,6 @@ import { CountModule } from '../count/count.module';
     }),
     PrismaModule,
     JwtModule,
-    CountModule,
     BullModule.registerQueue({
       name: 'email',
     }),
