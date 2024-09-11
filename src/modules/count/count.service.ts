@@ -1,51 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Exception } from 'handlebars';
 
 @Injectable()
 export class CountService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async incrementAccessPage(page: 'accessHomePage' | 'accessSignUpPage'): Promise<void> {
-    const counter = await this.prisma.counter.findUnique({
-      where: { id: 1 },
-    });
-
-    if (!counter) {
-      throw new Exception("Counter not found!");
-    }
-
-    const newValue = counter[page] + 1;
+  async incrementAccess(url: string): Promise<void> {
+    const page = this.getPageKey(url);
+    if (!page) throw new BadRequestException("Error !");
 
     await this.prisma.counter.update({
       where: { id: 1 },
-      data: { [page]: newValue },
+      data: { [page]: {  increment: 1 }},
     });
   }
 
-  async incrementAccessHomePage(): Promise<void> {
-    await this.incrementAccessPage('accessHomePage');
-  }
+  async getAccess(url: string): Promise<number> {
+    const page = this.getPageKey(url);
+    if (!page) throw new BadRequestException("Error !");
 
-  async incrementAccessSignUpPage(): Promise<void> {
-    await this.incrementAccessPage('accessSignUpPage');
-  }
-  
-  async getAccess(page: 'accessHomePage' | 'accessSignUpPage') : Promise<number>{
-    const counter = await this.prisma.counter.findUnique({
-      where: {id: 1},
-    });
-    if(!counter){
-      throw new Exception("Counter not found!");
-    }
+    const counter = await this.prisma.counter.findUnique({ where: { id: 1 } });
+    if (!counter) throw new BadRequestException("Error !");
+
     return counter[page];
   }
 
-  async getAccessHomePage(): Promise<number>{
-    return this.getAccess('accessHomePage');
-  }
-
-  async getAccessSignUpPage():Promise<number>{
-    return this.getAccess('accessSignUpPage');
+  private getPageKey(url: string): string | null {
+    if (url === '/home') return 'accessHomePage';
+    if (url === '/signup') return 'accessSignUpPage';
+    return null;
   }
 }

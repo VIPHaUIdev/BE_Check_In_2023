@@ -1,26 +1,27 @@
-import { Controller, Param, Get } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { CountService } from './count.service'; 
 
 @Controller('/clicks')
 export class CountController {
   constructor(private readonly countService: CountService) {}
 
-  @Get('/')
+  @Get('/home')
   async incrementAccessHomePage(): Promise<void> {
-    await this.countService.incrementAccessHomePage();
+    await this.countService.incrementAccess('/home');
   }
 
   @Get('/signup')
-  async incrementAccessSignUpPage(): Promise<void>{
-    await this.countService.incrementAccessSignUpPage();
+  async incrementAccessSignUpPage(): Promise<void> {
+    await this.countService.incrementAccess('/signup'); 
   }
 
   @Get('/display')
-  async display(): Promise<object>{
-    const accsessHomePage = await this.countService.getAccessHomePage();
-    const accessSignUpPage = await this.countService.getAccessSignUpPage();
+  async display(): Promise<object> {
+    const accessHomePage = await this.countService.getAccess('/home'); 
+    const accessSignUpPage = await this.countService.getAccess('/signup'); 
     return {
-      accsessHomePage, accessSignUpPage
+      accessHomePage, 
+      accessSignUpPage
     };
   }
 }

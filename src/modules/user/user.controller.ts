@@ -40,7 +40,6 @@ import { QueryJobDto } from '../email/dto/query.dto';
 import { FileUpload } from 'src/decorators/file-upload.decorator';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Recaptcha } from '@nestlab/google-recaptcha';
-import { CountService } from '../count/count.service';
 
 @SkipThrottle()
 @Controller('users')
@@ -49,7 +48,7 @@ export class UserController {
     private userService: UserService,
     private sseService: SseService,
     private emailService: EmailService,
-    @InjectQueue('email') private readonly emailQueue: Queue,private readonly countService: CountService
+    @InjectQueue('email') private readonly emailQueue: Queue,
   ) {}
   @Get()
   @Admin()
@@ -79,17 +78,6 @@ export class UserController {
     const updatedUser = await this.userService.checkin(id);
     return updatedUser;
   }
-
-  // @Get('/signup')
-  // renderSignUpPage(){
-  //   console.log('Render signup page route called');
-  //   this.countService.incrementSignUpCount();
-  // }
-
-  // @Get('/signup')
-  // async incrementAccessSignUpPage(): Promise<void>{
-  //   await this.userService.incrementAccessSignUpPage();
-  // }
 
   @Post('/signup')
   @SkipThrottle(false)
