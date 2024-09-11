@@ -6,37 +6,46 @@ import { Exception } from 'handlebars';
 export class CountService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async incrementAccessHomePage(): Promise<void> {
+  async incrementAccessPage(page: 'accessHomePage' | 'accessSignUpPage'): Promise<void> {
     const counter = await this.prisma.counter.findUnique({
-      where:{id :1},
+      where: { id: 1 },
+    });
+
+    if (!counter) {
+      throw new Exception("Counter not found!");
+    }
+
+    const newValue = counter[page] + 1;
+
+    await this.prisma.counter.update({
+      where: { id: 1 },
+      data: { [page]: newValue },
+    });
+  }
+
+  async incrementAccessHomePage(): Promise<void> {
+    await this.incrementAccessPage('accessHomePage');
+  }
+
+  async incrementAccessSignUpPage(): Promise<void> {
+    await this.incrementAccessPage('accessSignUpPage');
+  }
+  
+  async getAccess(page: 'accessHomePage' | 'accessSignUpPage') : Promise<number>{
+    const counter = await this.prisma.counter.findUnique({
+      where: {id: 1},
     });
     if(!counter){
       throw new Exception("Counter not found!");
     }
-    const newValue = counter.accessHomePage + 1;
-    await this.prisma.counter.update({
-      where: { id: 1 },
-      data: { accessHomePage: newValue },
-    });
+    return counter[page];
   }
 
   async getAccessHomePage(): Promise<number>{
-    const counter = await this.prisma.counter.findUnique({
-      where:{id :1},
-    });
-    if(!counter){
-      throw new Exception("Counter not found!");
-    }
-    return counter.accessHomePage;
+    return this.getAccess('accessHomePage');
   }
 
-  async getAccessSignUpPage(): Promise<number>{
-    const counter = await this.prisma.counter.findUnique({
-      where:{id :1},
-    });
-    if(!counter){
-      throw new Exception("Counter not found!");
-    }
-    return counter.accessSignUpPage;
+  async getAccessSignUpPage():Promise<number>{
+    return this.getAccess('accessSignUpPage');
   }
 }

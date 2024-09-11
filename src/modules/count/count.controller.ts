@@ -1,7 +1,7 @@
 import { Controller, Param, Get } from '@nestjs/common';
 import { CountService } from './count.service'; 
 
-@Controller()
+@Controller('/clicks')
 export class CountController {
   constructor(private readonly countService: CountService) {}
 
@@ -10,11 +10,17 @@ export class CountController {
     await this.countService.incrementAccessHomePage();
   }
 
-  @Get('/display')
-  async display(): Promise<string>{
-    const accsessHomePage = await this.countService.getAccessHomePage();
-    const accessSignUpPage = await this.countService.getAccessSignUpPage();
-    return `Number of Access Home Page: ${accsessHomePage} and Number of Access Sign Up Page: ${accessSignUpPage}`;
+  @Get('/signup')
+  async incrementAccessSignUpPage(): Promise<void>{
+    await this.countService.incrementAccessSignUpPage();
   }
 
+  @Get('/display')
+  async display(): Promise<object>{
+    const accsessHomePage = await this.countService.getAccessHomePage();
+    const accessSignUpPage = await this.countService.getAccessSignUpPage();
+    return {
+      accsessHomePage, accessSignUpPage
+    };
+  }
 }

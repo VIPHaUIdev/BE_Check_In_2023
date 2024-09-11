@@ -348,17 +348,17 @@ export class UserService {
     await this.prismaService.user.delete({ where: { id } });
   }
 
-  async incrementAccessSignUpPage() : Promise<void>{
-    const counter = await this.prismaService.counter.findUnique({
-      where: {id: 1}
-    })
-    if(!counter){
-      throw new Exception("Counter not found!");
-    }
-    const newValue = counter.accessSignUpPage + 1;
-    await this.prismaService.counter.update({
-      where: { id: 1 },
-      data: { accessSignUpPage: newValue },
-    });
-  }
+  // async incrementAccessSignUpPage() : Promise<void>{
+  //   const counter = await this.prismaService.counter.findUnique({
+  //     where: {id: 1}
+  //   })
+  //   if(!counter){
+  //     throw new Exception("Counter not found!");
+  //   }
+  //   const newValue = counter.accessSignUpPage + 1;
+  //   await this.prismaService.counter.update({
+  //     where: { id: 1 },
+  //     data: { accessSignUpPage: newValue },
+  //   });
+  // }
 }

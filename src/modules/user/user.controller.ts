@@ -62,7 +62,7 @@ export class UserController {
 
   @Patch('/checkin')
   @Admin()  
-  @ResponseMessage('checkin by email or p hone successfully')
+  @ResponseMessage('checkin by email or phone successfully')
   @HttpCode(HttpStatus.OK)
   async checkInByEmailPhone(
     @Query('q') account: string,
@@ -86,10 +86,10 @@ export class UserController {
   //   this.countService.incrementSignUpCount();
   // }
 
-  @Get('/signup')
-  async incrementAccessSignUpPage(): Promise<void>{
-    await this.userService.incrementAccessSignUpPage();
-  }
+  // @Get('/signup')
+  // async incrementAccessSignUpPage(): Promise<void>{
+  //   await this.userService.incrementAccessSignUpPage();
+  // }
 
   @Post('/signup')
   @SkipThrottle(false)
