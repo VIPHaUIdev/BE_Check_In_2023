@@ -2,6 +2,9 @@ import { exec } from 'child_process';
 import * as dotenv from 'dotenv';
 import { loggerIns } from './logger';
 import * as fs from 'fs-extra';
+import * as path from 'path';
+import { DB_BACKUP_FOLDER_DRIVE } from 'src/constants';
+import uploadFileToDriver from 'src/common/uploadFileDrive';
 dotenv.config();
 
 const args: string[] = process.argv.slice(2);
@@ -44,6 +47,11 @@ export function backupDB(): void {
       loggerIns.debug(`stdout: ${stdout}`, { label: 'backupDB' });
       loggerIns.debug(`stderr: ${stderr}`, { label: 'backupDB' });
     },
+  );
+
+  uploadFileToDriver(
+    DB_BACKUP_FOLDER_DRIVE,
+    path.join(__dirname, '..', '..', 'backups', backupFileName),
   );
 }
 
