@@ -1,16 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { CountService } from './count.service'; 
 
 @Controller('/clicks')
 export class CountController {
   constructor(private readonly countService: CountService) {}
 
-  @Get('/home')
+  @Post('/home')
   async incrementAccessHomePage(): Promise<void> {
     await this.countService.incrementAccess('/home');
   }
 
-  @Get('/signup')
+  @Post('/signup')
   async incrementAccessSignUpPage(): Promise<void> {
     await this.countService.incrementAccess('/signup'); 
   }

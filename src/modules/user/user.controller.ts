@@ -42,7 +42,10 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { Recaptcha } from '@nestlab/google-recaptcha';
 
 @SkipThrottle()
-@Controller('users')
+@Controller({
+  path: 'users',
+  version: '1',
+})
 export class UserController {
   constructor(
     private userService: UserService,
