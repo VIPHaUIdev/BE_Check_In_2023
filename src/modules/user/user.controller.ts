@@ -63,7 +63,7 @@ export class UserController {
   }
 
   @Patch('/checkin')
-  @Admin()  
+  @Admin()
   @ResponseMessage('checkin by email or phone successfully')
   @HttpCode(HttpStatus.OK)
   async checkInByEmailPhone(
@@ -97,8 +97,8 @@ export class UserController {
     delete user.password;
 
     await this.emailQueue.add('sendEmail', {
-        email: user.email,
-        userId: user.id,
+      email: user.email,
+      userId: user.id,
       fullName: user.fullName,
       phoneNumber: user.phoneNumber,
     });
@@ -178,7 +178,7 @@ export class UserController {
     const data = await this.emailService.getJobs(query);
     return data;
   }
-  
+
   @Get('/generate-link')
   @Admin()
   @ResponseMessage('generate link successfully')

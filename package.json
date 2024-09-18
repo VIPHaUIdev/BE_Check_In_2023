@@ -47,13 +47,11 @@
     "handlebars": "^4.7.7",
     "hbs": "^4.2.0",
     "multer": "^1.4.5-lts.1",
-    "mysql2": "^3.11.0",
     "nest-winston": "^1.9.3",
     "node-schedule": "^2.1.1",
     "nodemailer": "^6.9.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.20",
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
@@ -67,7 +65,6 @@
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
-    "depcheck": "^1.4.7",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",

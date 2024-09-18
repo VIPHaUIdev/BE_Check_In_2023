@@ -7,20 +7,20 @@ export class CountService {
 
   async incrementAccess(url: string): Promise<void> {
     const page = this.getPageKey(url);
-    if (!page) throw new BadRequestException("Error !");
+    if (!page) throw new BadRequestException('Error: page not found!');
 
     await this.prisma.counter.update({
       where: { id: 1 },
-      data: { [page]: {  increment: 1 }},
+      data: { [page]: { increment: 1 } },
     });
   }
 
   async getAccess(url: string): Promise<number> {
     const page = this.getPageKey(url);
-    if (!page) throw new BadRequestException("Error !");
+    if (!page) throw new BadRequestException('Error: page not found!');
 
     const counter = await this.prisma.counter.findUnique({ where: { id: 1 } });
-    if (!counter) throw new BadRequestException("Error !");
+    if (!counter) throw new BadRequestException('Error !');
 
     return counter[page];
   }
