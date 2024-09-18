@@ -346,4 +346,5 @@ export class UserService {
     await this.prismaService.email.delete({ where: { userId: id } });
     await this.prismaService.user.delete({ where: { id } });
   }
+
 }

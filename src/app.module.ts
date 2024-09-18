@@ -14,15 +14,16 @@ import { HttpLoggerMiddleware } from './middlewares/http.logger.middleware';
 import { CustomThrottlerGuard } from './providers/custom-throttler-guard.provider';
 import { EmailModule } from './modules/email/email.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { CountModule } from './modules/count/count.module';
 
 @Module({
   imports: [
     CacheModule.register({ isGlobal: true, ttl: 0 }),
     BullModule.forRoot({
       redis: {
-        host: process.env.REDIS_HOST,
-        port: +process.env.REDIS_PORT,
-        password: process.env.REDIS_PASSWORD,
+        host: process.env.REDIS_HOST || 'localhost',
+        port: +process.env.REDIS_PORT || 6379,
+        password: process.env.REDIS_PASSWORD || '!CnJbIcJqew',
       },
     }),
     ConfigModule.forRoot({
@@ -43,6 +44,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     UserModule,
     SharedModule,
     EmailModule,
+    CountModule,
   ],
   providers: [
     {

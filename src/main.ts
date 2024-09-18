@@ -56,8 +56,9 @@ async function bootstrap() {
   });
 
   app.useStaticAssets(join(__dirname, '..', 'uploads'));
-
+  console.log('Application is starting...');
   await app.listen(3000);
+  console.log('Application is running on: ' + (await app.getUrl()));
 }
 
 bootstrap();

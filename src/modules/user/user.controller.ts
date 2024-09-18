@@ -53,7 +53,6 @@ export class UserController {
     private emailService: EmailService,
     @InjectQueue('email') private readonly emailQueue: Queue,
   ) {}
-
   @Get()
   @Admin()
   @ResponseMessage('get all users successfully')
@@ -85,7 +84,7 @@ export class UserController {
 
   @Post('/signup')
   @SkipThrottle(false)
-  @Recaptcha()
+  // @Recaptcha()
   @ResponseMessage('signup successfully')
   @HttpCode(HttpStatus.OK)
   @FileUpload('image')
@@ -193,7 +192,7 @@ export class UserController {
 
   @Get('/renew-qr')
   @SkipThrottle(false)
-  @Recaptcha()
+  // @Recaptcha()
   @ResponseMessage('renew QR code successfully')
   @HttpCode(HttpStatus.OK)
   async renewQR(@Query('q') account: string): Promise<object | null> {
