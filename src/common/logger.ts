@@ -3,14 +3,14 @@ import 'winston-daily-rotate-file';
 
 const enumerateErrorFormat = winston.format((info) => {
   if (info.level == 'error') {
-    const message = info.message.split('\n').slice(0, 3);
+    const message = (info.message as string).split('\n').slice(0, 3);
     info = { ...info, message };
   }
   return info;
 });
 
 export const fileTransport = new winston.transports.DailyRotateFile({
-  level: 'info' || 'error' || 'debug',
+  level: 'info',
   filename: './logs/log_%DATE%.log',
   datePattern: 'DD_MM_YYYY',
   zippedArchive: true,
