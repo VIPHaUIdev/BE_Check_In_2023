@@ -17,6 +17,11 @@ import { backupDB } from './common/backupDB';
 import { GoogleRecaptchaFilter } from './filters/recaptcha.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import {
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -51,13 +56,32 @@ async function bootstrap() {
     }),
   );
 
+  if (process.env.NODE_ENV === 'development') {
+    const config = new DocumentBuilder()
+      .setTitle('Check-in Birthday Project')
+      .setDescription(
+        'This document includes all the APIs for the Check-in Birthday Project',
+      )
+      .setVersion('1.0')
+      .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
+      .build();
+
+    const options: SwaggerDocumentOptions = {
+      operationIdFactory: (controllerKey: string, methodKey: string) =>
+        methodKey,
+    };
+    const documentFactory = () =>
+      SwaggerModule.createDocument(app, config, options);
+    SwaggerModule.setup('docs', app, documentFactory);
+  }
+
   schedule.scheduleJob('0 * * * *', () => {
     backupDB();
   });
 
   app.useStaticAssets(join(__dirname, '..', 'uploads'));
   console.log('Application is starting...');
-  await app.listen(3000);
+  await app.listen(process.env.PORT ?? 3000);
   console.log('Application is running on: ' + (await app.getUrl()));
 }
 

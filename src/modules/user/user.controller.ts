@@ -28,6 +28,9 @@ import {
   UpdateUserDto,
   UpdateUserResponse,
   FindOnePayload,
+  GenerateLinkResponseDto,
+  RenewQrCodeResponseDto,
+  CheckLinkResponseDto,
 } from './dto/user.dto';
 import { Admin, Auth } from 'src/decorators/auth.decorator';
 import { QueryUserDto } from './dto/query.dto';
@@ -40,12 +43,20 @@ import { QueryJobDto } from '../email/dto/query.dto';
 import { FileUpload } from 'src/decorators/file-upload.decorator';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Recaptcha } from '@nestlab/google-recaptcha';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @SkipThrottle()
 @Controller({
   path: 'users',
   version: '1',
 })
+@ApiTags('users')
 export class UserController {
   constructor(
     private userService: UserService,
@@ -53,7 +64,20 @@ export class UserController {
     private emailService: EmailService,
     @InjectQueue('email') private readonly emailQueue: Queue,
   ) {}
+
   @Get()
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Get all users by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all users',
+    type: findAllUsersResponse,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   @Admin()
   @ResponseMessage('get all users successfully')
   @HttpCode(HttpStatus.OK)
@@ -66,6 +90,18 @@ export class UserController {
   @Admin()
   @ResponseMessage('checkin by email or phone successfully')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Check-in by email or phone by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Check-in by email or phone',
+    type: CheckinUserResponse,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async checkInByEmailPhone(
     @Query('q') account: string,
   ): Promise<CheckinUserResponse> {
@@ -77,6 +113,18 @@ export class UserController {
   @Admin()
   @ResponseMessage('checkin successfully')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Check-in by id by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Check-in by id',
+    type: CheckinUserResponse,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async checkIn(@Param('id') id: string): Promise<CheckinUserResponse> {
     const updatedUser = await this.userService.checkin(id);
     return updatedUser;
@@ -84,10 +132,16 @@ export class UserController {
 
   @Post('/signup')
   @SkipThrottle(false)
-  // @Recaptcha()
+  @Recaptcha()
   @ResponseMessage('signup successfully')
   @HttpCode(HttpStatus.OK)
   @FileUpload('image')
+  @ApiOperation({ summary: 'Sign up event' })
+  @ApiResponse({
+    status: 200,
+    description: 'Sign up successfully',
+    type: UserDto,
+  })
   async signup(
     @Body() userDto: InfoUserDto,
     @UploadedFile() image: Express.Multer.File,
@@ -110,6 +164,18 @@ export class UserController {
   @Admin()
   @ResponseMessage('create successfully')
   @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Create user by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Create user successfully',
+    type: UserDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async create(@Body() createUser: CreateUserDto): Promise<UserDto> {
     const user = await this.userService.create(createUser);
     delete user.password;
@@ -120,6 +186,12 @@ export class UserController {
   @SkipThrottle(false)
   @ResponseMessage('sign up admin successfully')
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Sign up admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Sign up admin successfully',
+    type: UserDto,
+  })
   async signupAdmin(
     @Body() adminBody: CreateUserDto,
     @Query('secret') code: string,
@@ -131,6 +203,17 @@ export class UserController {
 
   @Get('/sse')
   @Admin()
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Real time check-in data' })
+  @ApiResponse({
+    status: 200,
+    description: 'Real time check-in data by admin',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async streamCheckinData(@Res() res: Response): Promise<void> {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -165,6 +248,17 @@ export class UserController {
     'Content-Disposition',
     'attachment; filename="Danh-sach-dang-ky.xlsx"',
   )
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Export users to excel by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Export excel successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async exportUsers(@Res() res: Response): Promise<void> {
     const buffer = await this.userService.exportUsersToExcel();
     res.send(buffer);
@@ -174,6 +268,18 @@ export class UserController {
   @Admin()
   @ResponseMessage('get all email jobs successfully')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Get all email jobs by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get all email jobs',
+    type: GetAllJobsResponse,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async getAllEmailJobs(
     @Query() query: QueryJobDto,
   ): Promise<GetAllJobsResponse> {
@@ -185,17 +291,37 @@ export class UserController {
   @Admin()
   @ResponseMessage('generate link successfully')
   @HttpCode(HttpStatus.OK)
-  async generateLink(@Query('q') userId: string): Promise<object> {
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Generate link to user update image by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Generate link successfully',
+    type: GenerateLinkResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  async generateLink(
+    @Query('q') userId: string,
+  ): Promise<GenerateLinkResponseDto> {
     const token = await this.userService.generateToken(userId);
     return { token };
   }
 
   @Get('/renew-qr')
   @SkipThrottle(false)
-  // @Recaptcha()
+  @Recaptcha()
   @ResponseMessage('renew QR code successfully')
   @HttpCode(HttpStatus.OK)
-  async renewQR(@Query('q') account: string): Promise<object | null> {
+  @ApiOperation({ summary: 'Renew QR code' })
+  @ApiResponse({
+    status: 200,
+    description: 'Renew QR code successfully',
+    type: RenewQrCodeResponseDto,
+  })
+  async renewQR(@Query('q') account: string): Promise<RenewQrCodeResponseDto> {
     const user = await this.userService.findOne(account);
     return { id: user.id };
   }
@@ -205,24 +331,49 @@ export class UserController {
   @Auth()
   @ResponseMessage('the link is still usable')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Check link is still usable by user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Check link successfully',
+    type: CheckLinkResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async checkLink(
     @Req() req: Request,
     @Headers('Authorization') authorizationHeader: string,
     @Query('answer') answer: boolean,
-  ): Promise<object | null> {
+  ): Promise<CheckLinkResponseDto> {
     const token = authorizationHeader.replace('Bearer ', '');
-    const userName = await this.userService.checkLink(
+    const checkedLink = await this.userService.checkLink(
       req['user'].userId,
       token,
       answer,
     );
-    return userName;
+
+    return checkedLink;
   }
+
   @Patch('/update-image')
   @Auth()
   @FileUpload('image')
   @ResponseMessage('update image successfully')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Update image by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Upload image successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async updateImage(
     @Req() req: Request,
     @Headers('Authorization') authorizationHeader: string,
@@ -240,6 +391,17 @@ export class UserController {
   @Admin()
   @ResponseMessage('Browse user image successfully')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Browse image by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Browse image successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async browseImage(@Query('q') id: string): Promise<null> {
     const user = await this.userService.browseImage(id);
     await this.emailQueue.add('sendEmailConfirm', {
@@ -255,6 +417,18 @@ export class UserController {
   @ResponseMessage('update user successfully')
   @HttpCode(HttpStatus.OK)
   @FileUpload('image')
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Update user by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Update user successfully',
+    type: UpdateUserResponse,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async updateUser(
     @Param('id') id: string,
     @Body() data: UpdateUserDto,
@@ -271,6 +445,18 @@ export class UserController {
   @FileUpload('image', 'checkin-face')
   @ResponseMessage('check in by face successfully')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Update user by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Update user successfully',
+    type: UpdateUserResponse,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async checkinByFace(
     @UploadedFile() image: Express.Multer.File,
   ): Promise<CheckinUserResponse> {
@@ -282,6 +468,18 @@ export class UserController {
   @Admin()
   @ResponseMessage('success')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Get user by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get user successfully',
+    type: FindOnePayload,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
   async getOne(@Param('id') id: string): Promise<FindOnePayload | null> {
     const user = await this.userService.findOneById(id);
     delete user.password;
@@ -292,6 +490,21 @@ export class UserController {
   @Admin()
   @ResponseMessage('delete user successfully')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiOperation({ summary: 'Delete user by admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete user successfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
   async deleteOne(@Param('id') id: string): Promise<void> {
     await this.userService.deleteOne(id);
   }

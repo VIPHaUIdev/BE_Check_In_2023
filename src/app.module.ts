@@ -21,9 +21,9 @@ import { CountModule } from './modules/count/count.module';
     CacheModule.register({ isGlobal: true, ttl: 0 }),
     BullModule.forRoot({
       redis: {
-        host: process.env.REDIS_HOST || 'localhost',
+        host: process.env.REDIS_HOST,
         port: +process.env.REDIS_PORT || 6379,
-        password: process.env.REDIS_PASSWORD || '!CnJbIcJqew',
+        password: process.env.REDIS_PASSWORD,
       },
     }),
     ConfigModule.forRoot({

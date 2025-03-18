@@ -9,6 +9,7 @@ import {
   UpdateUserResponse,
   FindOnePayload,
   CreateUserDto,
+  CheckLinkResponseDto,
 } from './dto/user.dto';
 import { UserNotFoundException } from '../../exceptions/user-not-found.exception';
 import { type Prisma } from '@prisma/client';
@@ -281,7 +282,7 @@ export class UserService {
     userId: string,
     token: string,
     answer?: boolean,
-  ): Promise<object | null> {
+  ): Promise<CheckLinkResponseDto> {
     if (answer === undefined || answer === true) {
       if ((await this.cacheManager.get(userId)) === token) {
         throw new UnauthorizedException();
@@ -293,8 +294,10 @@ export class UserService {
       return user;
     }
     await this.cacheManager.set(userId, token);
+
     return null;
   }
+
   async updateImage(
     userId: string,
     token: string,
